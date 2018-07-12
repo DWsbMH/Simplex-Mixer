@@ -1,0 +1,78 @@
+{
+	var variables = [];
+    var constraints = [];
+    var aMatrix = [];
+    var tmp = [];
+    
+    var problem = {
+    	variables: variables,
+        constraints: constraints,
+        A: aMatrix
+    }
+
+    function isExistingVariable(actualVar) { 
+    	var returnValue;
+    	if (variables.includes(actualVar)) {
+        	returnValue = actualVar;
+        } else {
+        	throw new SyntaxError(actualVar + " variable doesn't exist. You can use only: " + variables)
+        }
+        return returnValue;
+    }
+    
+    function addMatrixRow() {
+    	if(aMatrix[0] != undefined && aMatrix[0].length != tmp.length) {
+        	throw new SyntaxError("Number of variables should be equal to variables of the first expression")
+        }
+    	aMatrix.push(tmp);
+        tmp = [];
+    }
+    
+    function setTarget(target) {
+    	problem.target = target;
+        addMatrixRow();
+    }
+
+}
+
+start = variableDefinitions expression* targetExpression {return problem}
+ 
+variableDefinitions = variableDefinition+
+ 
+variableDefinition
+ 	= "var" whitespace variableName whitespace extraVariable* ";" whitespace
+    
+extraVariable = "," whitespace variableName whitespace
+variableName = variableName:indentifier {variables.push(variableName)}
+indentifier = [a-zA-Z] 
+
+targetExpression = "Z:" whitespace partialExpression extraPart* whitespace "->" whitespace target:target whitespace
+	{return setTarget(target)}
+
+expression = partialExpression extraPart* "<=" whitespace constraint:constraint whitespace
+	{return addMatrixRow()}
+
+partialExpression = 
+    firstMultiplier:multiplier whitespace
+    firstVariableName:variable whitespace 
+    operatorDefinition:operator whitespace
+    secondMultiplier:multiplier whitespace
+    secondVariableName:variable whitespace
+    
+extraPart =
+	 operatorDefinition:operator whitespace
+     multiplier: multiplier whitespace
+     variable: variable whitespace
+    
+variable = variableName:indentifier {isExistingVariable(variableName)}
+multiplier = multiplier:number "*" {tmp.push(parseFloat(multiplier))}
+number = sign:sign number:[0-9]+ { return sign + number.join(""); }
+sign = sign:[-]* {return sign}
+operator = [+-]
+constraint = constraint:number {constraints.push(parseFloat(constraint))}
+target = "min" / "max"
+whitespace = [ \t\n\r]*
+
+_ "whitespace"
+  = [ \t\n\r]*
+              

@@ -8,7 +8,7 @@
       @input="change"
       :disabled="disabled"
       orient="vertical"
-      class="slider">
+      class="slider"/>
   </div>
 </template>
 
