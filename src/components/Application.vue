@@ -1,7 +1,7 @@
 <template>
 <div class="app">
-  <sampleExersice ></sampleExersice>
-  <div class="slidersContainer">
+  <userInputHandler v-if="problem == undefined" @problemReady="initProblem"></userInputHandler>
+  <div v-if="problem != undefined" class="slidersContainer">
      <transition-group name="list-complete" tag="div">
       <span class="list-complete-item" v-for="(item, i) in items" :key="item.name">
         {{item.name}}
@@ -18,16 +18,6 @@
     <br />
     <result v-bind="result"></result>
     <table class="ttts">
-      <tr>
-        <th/>
-        <th>x1</th>
-        <th>x2</th>
-        <th>x3</th>
-        <th>y1</th>
-        <th>y2</th>
-        <th>y3</th>
-        <th>XB</th>
-      </tr>
       <tr v-for="i in table.length" :key="i + '. row'">
         <th>
           {{items[baseIndexes[i-1]] ? items[baseIndexes[i-1]].name : "dT"}}
@@ -45,66 +35,32 @@
 import Result from './Result.vue'
 import Slider from './Slider.vue'
 import SampleExercise from './SampleExercise.vue'
+import UserInputHandler from './UserInputHandler.vue'
 import _ from 'lodash'
 export default {
   components: {
     'slider': Slider,
     'result': Result,
-    'sampleExersice': SampleExercise
+    'sampleExersice': SampleExercise,
+    'userInputHandler': UserInputHandler
   },
   data() {
     return {
+      problem: undefined,
       result: {
         actualResult: 0
       },
       baseIndexes: [],
-      table: [
-        [2, 1, 1, 1, 0, 0, 1],
-        [0, 1, 2, 0, 1, 0, 3],
-        [-1, 0, 3, 0, 0, 1, 2],
-        [-1, -1, -2, 0, 0, 0, 0],
-      ],
-      items: [{
-          value: 1,
-          index: 3,
-          name: "y1"
-        },
-        {
-          value: 2,
-          index: 4,
-          name: "y2"
-        },
-        {
-          value: 3,
-          index: 5,
-          name: "y3"
-        },
-        {
-          value: 1,
-          index: 0,
-          name: "x1"
-        },
-        {
-          value: 2,
-          index: 1,
-          name: "x2"
-        },
-        {
-          value: 3,
-          index: 2,
-          name: "x3"
-        }
-      ],
+      table: [],
+      items: [],
       itemsCopy: []
     }
   },
   watch: {
     items: {
       handler: function(newVal) {
-        var i, j;
-        var diff = 0;
         var changedItem = this.getChangedItem(newVal, this.items, this.itemsCopy);
-        var p;
+        console.log(changedItem);
         if (!_.isUndefined(changedItem)) {
           var context = this.getContext(changedItem);
           this.items[changedItem.position].boundary = context.maxDelta;
@@ -122,6 +78,39 @@ export default {
     }
   },
   methods: {
+    initProblem: function(problem) {
+      this.problem = problem;
+      var $table = [];
+      for(var i=0; i < problem.A.length; i++) {
+        var row = problem.A[i];
+        var extraVariableValues = [];
+        for(var j=0; j < row.length; j++) {
+          extraVariableValues[j] = i == j ? 1 : 0;
+        }
+        var rowWithExtraValues = _.concat(row, extraVariableValues);
+        rowWithExtraValues[rowWithExtraValues.length] = problem.constraints[i] != undefined ? problem.constraints[i] : 0;
+        $table.push(rowWithExtraValues);
+      }
+      var item = {};
+      for (var i = 0; i <  $table[0].length-1; i++) {
+        if (i < ($table[0].length-1) / 2) {
+          item.value = $table[i][$table[0].length-1];
+          item.max = $table[i][$table[0].length-1];
+          item.index = ($table[0].length-1) / 2 + i;
+          item.name = "y"+i;
+          this.baseIndexes.push(i);
+        } else {
+          item.value = 0;
+          item.index = i - ($table[0].length-1) / 2;
+          item.name = problem.variables[i - ($table[0].length-1) / 2];
+        }
+        this.items.push(item);
+        item = {};
+      }
+      this.table = $table;
+      this.result.actualResult = 0;
+      this.itemsCopy = _.cloneDeep(this.items);
+    },
     getChangedItem: function(newVal, items, itemsCopy) {
       var result;
       var i;
@@ -140,6 +129,7 @@ export default {
       if (quotiens.length == 0) {
         alert("The solution doesn't have any boundary!");
       }
+      console.log(quotiens);
       var maxDelta = this.getMin(quotiens.map(quotient => quotient.value));
       var quotient = quotiens.find(function(quotient){
         return quotient.value == maxDelta;
@@ -156,13 +146,12 @@ export default {
     },
     getQuotients: function(items, p) {
       var quotients = [];
-      var i;
-      var j = 0;
-      for (i = 0; i < items.length; i++) {
+      for (var i = 0; i < items.length; i++) {
         if (items[i][p] > 0) {
+          console.log(items[i][items[0].length-1], "/", items[i][p]);
           quotients.push({
             rowIndex: i,
-            value: items[i][6] / items[i][p]
+            value: items[i][items[0].length-1] / items[i][p]
           });
         }
       }
@@ -183,7 +172,6 @@ export default {
       }
     },
     updateSliderOrder: function(changedItem, exittingIndex) {
-      //alert(this.items[this.baseIndexes[exittingIndex]].name + " exits from the base and " + this.items[changedItem.position].name + " enters for its place.");
       var tmp = this.items[this.baseIndexes[exittingIndex]];
       this.items[this.baseIndexes[exittingIndex]] = this.items[changedItem.position];
       this.items[changedItem.position] = tmp;
@@ -221,19 +209,6 @@ export default {
       }
       return result;
     }
-  },
-  created() {
-    this.result.actualResult = this.table[3][6];
-    this.items[0].value = this.table[0][6];
-    this.items[1].value = this.table[1][6];
-    this.items[2].value = this.table[2][6];
-    this.items[3].value = 0;
-    this.items[4].value = 0;
-    this.items[5].value = 0;
-    this.baseIndexes = [0, 1, 2];
-
-    this.maxDelta = this.getMin(this.getQuotients(this.items, 1));
-    this.itemsCopy = _.cloneDeep(this.items);
   }
 }
 </script>
