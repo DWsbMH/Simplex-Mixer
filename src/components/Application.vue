@@ -5,7 +5,7 @@
      <transition-group name="list-complete" tag="div">
       <span class="list-complete-item" v-for="(item, i) in items" :key="item.name">
         {{item.name}}
-        <slider v-model="item.value" v-bind="item"></slider>
+        <slider v-model="item.value" v-bind="item" :disabled="isIdInBase(i)"></slider>
         <p>
           Value: <br />{{parseFloat(item.value).toFixed(3)}}
         </p>
@@ -94,12 +94,14 @@ export default {
       var item = {};
       for (var i = 0; i <  $table[0].length-1; i++) {
         if (i < ($table[0].length-1) / 2) {
+          item.id = i;
           item.value = $table[i][$table[0].length-1];
           item.max = $table[i][$table[0].length-1];
           item.index = ($table[0].length-1) / 2 + i;
           item.name = "y"+i;
           this.baseIndexes.push(i);
         } else {
+          item.id = i;
           item.value = 0;
           item.index = i - ($table[0].length-1) / 2;
           item.name = problem.variables[i - ($table[0].length-1) / 2];
@@ -208,6 +210,9 @@ export default {
         }
       }
       return result;
+    },
+    isIdInBase: function(sliderId) {
+      return _.includes(this.baseIndexes, sliderId);
     }
   }
 }
