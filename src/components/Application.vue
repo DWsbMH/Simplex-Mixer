@@ -2,7 +2,7 @@
 <div class="app">
   <userInputHandler v-if="problem == undefined" @problemReady="initProblem"></userInputHandler>
   <div v-if="problem != undefined" class="slidersContainer">
-     <transition-group name="list-complete" tag="div">
+     <transition-group name="list-complete" tag="div" hidden>
       <span class="list-complete-item" v-for="(item, i) in items" :key="item.name">
         {{item.name}}
         <slider v-model="item.value" v-bind="item" :disabled="isIdInBase(i)"></slider>
@@ -15,7 +15,15 @@
         <br/>
       </span>
     </transition-group>
-    <br />
+    <transition-group name="list-complete" tag="div">
+      <span class="vueSliderContainer list-complete-item" v-for="(item, i) in items" :key="item.name + 'ff'">
+          {{item.name}}
+          <sliderWrapper v-model="item.value" v-bind="item" :disabled="isIdInBase(i)"></sliderWrapper>
+          <p>
+            {{table[table.length-1][items[i].index].toFixed(3)}}
+          </p>
+      </span>
+    </transition-group>
     <result v-bind="result"></result>
     <table class="ttts">
       <tr v-for="i in table.length" :key="i + '. row'">
@@ -27,22 +35,25 @@
         </td>
       </tr>
     </table>
+
   </div>
 </div>
 </template>
-
 <script>
 import Result from './Result.vue'
 import Slider from './Slider.vue'
+import SliderWrapper from './SliderWrapper.vue'
 import SampleExercise from './SampleExercise.vue'
 import UserInputHandler from './UserInputHandler.vue'
+import vueSlider from 'vue-slider-component'
 import _ from 'lodash'
 export default {
   components: {
     'slider': Slider,
+    'sliderWrapper': SliderWrapper,
     'result': Result,
-    'sampleExersice': SampleExercise,
-    'userInputHandler': UserInputHandler
+    'userInputHandler': UserInputHandler,
+    vueSlider
   },
   data() {
     return {
@@ -53,20 +64,22 @@ export default {
       baseIndexes: [],
       table: [],
       items: [],
-      itemsCopy: []
+      itemsCopy: [],
+      value: 2
     }
   },
   watch: {
     items: {
       handler: function(newVal) {
         var changedItem = this.getChangedItem(newVal, this.items, this.itemsCopy);
-        console.log(changedItem);
         if (!_.isUndefined(changedItem)) {
           var context = this.getContext(changedItem);
           this.items[changedItem.position].boundary = context.maxDelta;
           this.result.actualResult += context.difference * this.table[this.table.length-1][context.generalElemColumnIndex];
           this.updateSliders(changedItem, context);
           var exittingIndex = this.getIndexWithZeroValue(this.baseIndexes, this.items);
+          console.log(context);
+          console.log(exittingIndex);
           if(!_.isUndefined(exittingIndex)) {
             this.updateSliderOrder(changedItem, exittingIndex);
             this.updateTable(context);
@@ -93,18 +106,23 @@ export default {
       }
       var item = {};
       for (var i = 0; i <  $table[0].length-1; i++) {
+        item.id = i;
+        item.direction = "vertical";
+        item.height = 600;
+        item.width = 5;
+        item.interval = 0.001;
         if (i < ($table[0].length-1) / 2) {
-          item.id = i;
           item.value = $table[i][$table[0].length-1];
           item.max = $table[i][$table[0].length-1];
           item.index = ($table[0].length-1) / 2 + i;
           item.name = "y"+i;
+          item.processStyle = {"backgroundColor": "green"};
           this.baseIndexes.push(i);
         } else {
-          item.id = i;
           item.value = 0;
           item.index = i - ($table[0].length-1) / 2;
           item.name = problem.variables[i - ($table[0].length-1) / 2];
+          item.max = 15;
         }
         this.items.push(item);
         item = {};
@@ -131,7 +149,6 @@ export default {
       if (quotiens.length == 0) {
         alert("The solution doesn't have any boundary!");
       }
-      console.log(quotiens);
       var maxDelta = this.getMin(quotiens.map(quotient => quotient.value));
       var quotient = quotiens.find(function(quotient){
         return quotient.value == maxDelta;
@@ -176,7 +193,9 @@ export default {
     updateSliderOrder: function(changedItem, exittingIndex) {
       var tmp = this.items[this.baseIndexes[exittingIndex]];
       this.items[this.baseIndexes[exittingIndex]] = this.items[changedItem.position];
+      this.items[this.baseIndexes[exittingIndex]].processStyle = {"backgroundColor": "green"};
       this.items[changedItem.position] = tmp;
+      this.items[changedItem.position].processStyle = null;
     },
     updateTable: function(context) {
       var i, j;
@@ -219,8 +238,11 @@ export default {
 </script>
 
 <style scoped>
-.vueSlider {
+.vueSliderContainer {
   display: inline-block;
+}
+.vueSlider {
+  margin: 30px;
 }
 .slidersContainer {
   height: 300px;
