@@ -79,7 +79,6 @@ export default {
           this.updateSliders(changedItem, context);
           var exittingIndex = this.getIndexWithZeroValue(this.baseIndexes, this.items);
           console.log(context);
-          console.log(exittingIndex);
           if(!_.isUndefined(exittingIndex)) {
             this.updateSliderOrder(changedItem, exittingIndex);
             this.updateTable(context);
@@ -113,7 +112,7 @@ export default {
         item.interval = 0.001;
         if (i < ($table[0].length-1) / 2) {
           item.value = $table[i][$table[0].length-1];
-          item.max = $table[i][$table[0].length-1];
+          item.max = $table[i][$table[0].length-1] + 2;
           item.index = ($table[0].length-1) / 2 + i;
           item.name = "y"+i;
           item.processStyle = {"backgroundColor": "green"};
@@ -134,14 +133,18 @@ export default {
     getChangedItem: function(newVal, items, itemsCopy) {
       var result;
       var i;
-      for (i = 0; i < newVal.length; i++) {
+      console.log("---------------");
+      for (i = 0; i < items.length; i++) {
         if (items[i].value != itemsCopy[i].value) {
+          console.log(items[i].value, "<-", itemsCopy[i].value);
           result = {
             position: i,
             index: items[i].index
           };
         }
       }
+      console.log("---------------");
+      console.log("changed: ", result);
       return result;
     },
     getContext: function(changedItem) {
@@ -167,7 +170,7 @@ export default {
       var quotients = [];
       for (var i = 0; i < items.length; i++) {
         if (items[i][p] > 0) {
-          console.log(items[i][items[0].length-1], "/", items[i][p]);
+          //console.log(items[i][items[0].length-1], "/", items[i][p]);
           quotients.push({
             rowIndex: i,
             value: items[i][items[0].length-1] / items[i][p]
@@ -178,15 +181,21 @@ export default {
     },
     updateSliders: function(changedItem, context) {
       var i;
+      var actItem;
       for (i = 0; i < this.items.length; i++) {
+        actItem = this.items[i];
         if (i != changedItem.position && _.includes(this.baseIndexes, i)) {
           var rowIndex = _.indexOf(this.baseIndexes, i);
-          var newValue = this.items[i].value - (context.difference * this.table[rowIndex][context.generalElemColumnIndex]);
+          var newValue = actItem.value - (context.difference * this.table[rowIndex][context.generalElemColumnIndex]);
           if (newValue > 0) {
-            this.items[i].value = newValue;
+            actItem.value = newValue;
+            if (this.items[i].max - newValue <= 2) {
+              actItem.max += 2;
+            }
           } else {
-            this.items[i].value = 0;
+            actItem.value = 0;
           }
+          actItem.boundary = undefined;
         }
       }
     },

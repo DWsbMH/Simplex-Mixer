@@ -71,14 +71,11 @@ export default {
   watch: {
     value: function(newValue) {
       this.mutableValue = this.value;
-      console.log("watch");
     },
     mutableValue: function(newValue) {
       var value;
-      console.log("change");
       if(this.boundary && this.mutableValue > this.boundary) {
         value = this.boundary;
-        //event.preventDefault();
       } else {
         value = newValue;
       }
@@ -87,20 +84,6 @@ export default {
     }
   },
   computed: {
-    // mutableValues: function() {
-    //   var newValue;
-    //   console.log("change");
-    //   if(this.boundary && this.mutableValue > this.boundary) {
-    //     newValue = this.boundary;
-    //     this.mutableValue = newValue;
-    //     this.stopPropagation = true;
-    //     //event.preventDefault();
-    //   } else {
-    //     newValue = this.mutableValue;
-    //   }
-    //     this.$emit('input', this.mutableValue);
-    //     return this.mutableValue;
-    // },
     formattedValue: function() {
       return parseFloat(this.mutableValue).toFixed(3);
     }
