@@ -17,7 +17,7 @@
     </transition-group>
     <transition-group name="list-complete" tag="div">
       <span class="vueSliderContainer list-complete-item" v-for="(item, i) in items" :key="item.name + 'ff'">
-          {{item.name}}
+          {{item.name}}</br></br>
           <sliderWrapper v-model="item.value" v-bind="item" :disabled="isIdInBase(i)"></sliderWrapper>
           <p>
             {{table[table.length-1][items[i].index].toFixed(3)}}
@@ -110,6 +110,7 @@ export default {
         item.height = 600;
         item.width = 5;
         item.interval = 0.001;
+        item.isScalable = false;
         if (i < ($table[0].length-1) / 2) {
           item.value = $table[i][$table[0].length-1];
           item.max = $table[i][$table[0].length-1] + 2;
@@ -133,7 +134,6 @@ export default {
     getChangedItem: function(newVal, items, itemsCopy) {
       var result;
       var i;
-      console.log("---------------");
       for (i = 0; i < items.length; i++) {
         if (items[i].value != itemsCopy[i].value) {
           console.log(items[i].value, "<-", itemsCopy[i].value);
@@ -143,8 +143,6 @@ export default {
           };
         }
       }
-      console.log("---------------");
-      console.log("changed: ", result);
       return result;
     },
     getContext: function(changedItem) {
@@ -189,9 +187,6 @@ export default {
           var newValue = actItem.value - (context.difference * this.table[rowIndex][context.generalElemColumnIndex]);
           if (newValue > 0) {
             actItem.value = newValue;
-            if (this.items[i].max - newValue <= 2) {
-              actItem.max += 2;
-            }
           } else {
             actItem.value = 0;
           }
@@ -247,6 +242,9 @@ export default {
 </script>
 
 <style scoped>
+.app{
+  width: 1500px;
+}
 .vueSliderContainer {
   display: inline-block;
 }

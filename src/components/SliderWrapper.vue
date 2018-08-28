@@ -1,20 +1,28 @@
 <template>
-  <div>
-    <vue-slider class="vueSlider"
-    ref="slider"
-    v-model="mutableValue"
-    :value="mutableValue"
-    :max="max"
-    :interval="interval"
-    :disabled="disabled"
-    :direction="direction"
-    :height="height"
-    :width="width"
-    :speed="0.0001"
-    :formatter="formattedValue"
-    :stopPropagation="stopPropagation"
-    :processStyle="processStyle"
-    ></vue-slider>
+  <div class="sliderItem" @mouseover="activateScalability" @mouseleave="deactivateScalability" v-on:wheel="handleScroll">
+    <div class="vueSlider">
+      {{mutableMax}}
+      <vue-slider
+      ref="slider"
+      v-model="mutableValue"
+      :value="mutableValue"
+      :max="mutableMax"
+      :interval="interval"
+      :disabled="disabled"
+      :direction="direction"
+      :height="height"
+      :width="width"
+      :speed="0.0001"
+      :formatter="formattedValue"
+      :stopPropagation="stopPropagation"
+      :processStyle="processStyle"
+      :class="{scrollableClass: scrollable}"
+      >
+    </vue-slider>
+    </div>
+    <!-- <div class="vertical-line">
+
+    </div> -->
   </div>
 </template>
 
@@ -27,7 +35,9 @@ export default {
   data() {
     return {
       mutableValue: 0,
-      stopPropagation: false
+      mutableMax: 0,
+      stopPropagation: false,
+      scrollable: false
     }
   },
   props: {
@@ -70,6 +80,9 @@ export default {
   },
   watch: {
     value: function(newValue) {
+      if (this.mutableMax - newValue < 0.5) {
+        this.mutableMax += this.mutableMax - newValue;
+      }
       this.mutableValue = this.value;
     },
     mutableValue: function(newValue) {
@@ -81,6 +94,9 @@ export default {
       }
       this.$emit('input', value);
       this.$refs.slider.setValue(value)
+    },
+    max: function(newMax) {
+      this.mutableMax = this.max;
     }
   },
   computed: {
@@ -90,13 +106,45 @@ export default {
   },
   created: function() {
     this.mutableValue = this.value;
+    this.mutableMax = this.max;
+  },
+  methods: {
+    activateScalability: function() {
+      this.scrollable = true;
+      document.documentElement.style.overflow = 'hidden';
+      document.documentElement.style.height = '100%';
+      document.documentElement.style.width = '100%';
+    },
+    deactivateScalability: function() {
+      this.scrollable = false;
+      document.documentElement.style.overflow = 'auto'
+      document.documentElement.style.height = 'auto';
+      document.documentElement.style.width = 'auto';
+    },
+    handleScroll: function(event) {
+      if (this.scrollable) {
+        if (event.deltaY < 0) {
+          this.mutableMax++;
+        } else if ((this.mutableMax-0.5) >= this.value) {
+          this.mutableMax--;
+        }
+      }
+    }
   }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+  .sliderItem {
+    display: inline;
+  }
   .vueSlider {
     margin: 30px;
   }
+  div.vertical-line{
+     width: 1px; /* Line width */
+     background-color: black; /* Line color */
+     height: 100px; /* Override in-line if you want specific height. */
+   }
 </style>
