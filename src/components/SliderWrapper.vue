@@ -19,10 +19,14 @@
       :class="{scrollableClass: scrollable}"
       >
     </vue-slider>
-    </div>
     <!-- <div class="vertical-line">
 
     </div> -->
+    </div>
+    <div>
+      hello
+    </div>
+
   </div>
 </template>
 
@@ -137,10 +141,11 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
   .sliderItem {
-    display: inline;
+    display: inline-block;
   }
   .vueSlider {
     margin: 30px;
+    display: inline;
   }
   div.vertical-line{
      width: 1px; /* Line width */

@@ -1,16 +1,28 @@
 <template>
 <div>
   <div class="createProblem">
-    <div class="row problemEditor">
-      <textarea class="textEditor" v-model="problem"></textarea>
-      <div class="error">
-        {{error}}
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col col-md-10 text-center">
+          <div class="row ">
+            <div class="problemEditor col-md-12">
+              <textarea class="textEditor" v-model="problem"></textarea>
+              <div class="error">
+                {{error}}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="row">
-      <input type="file" name="uploadProblem" id="uploadProblem" @change="uploadFile" hidden/>
-      <label for="uploadProblem" class="createProblemButton">Select file</label>
-      <button class="createProblemButton" @click="createProblem">Create problem</button>
+      <div class="row justify-content-center">
+        <div class="col col-md-10">
+          <button class="createProblemButton customButton float-left" @click="createProblem">Create problem</button>
+          <div class="customButton float-right">
+            <input type="file" name="uploadProblem" id="uploadProblem" @change="uploadFile" hidden/>
+            <label for="uploadProblem" class="createProblemButton">Upload problem</label>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -54,24 +66,29 @@ export default {
 }
 </script>
 <style scoped>
-
 .createProblem {
-  display: block;
+  background-color: #2980b9;
+}
+.customButton {
+
 }
 
 .problemEditor {
   margin-bottom: 30px;
+  margin-top: 30px;
 }
 
 .textEditor {
-  width: 50%;
-  height: 200px;
+  width: 100%;
+  height: 400px;
+  padding: 10px;
+  font-family: 'Consolas'
 }
 
 .error {
   background-color: red;
   color: white;
-  width: 50%;
+  width: 100%;
   margin: auto;
 }
 
@@ -79,12 +96,11 @@ export default {
   display: inline-block;
   border: none;
   padding: 1rem 2rem;
-  margin: 0;
   text-decoration: none;
-  background: #0069ed;
+  background: #58CD58;
   color: #ffffff;
   font-family: sans-serif;
-  font-size: 1rem;
+  font-size: 1.1rem;
   cursor: pointer;
   text-align: center;
   transition: background 250ms ease-in-out,
@@ -95,7 +111,7 @@ export default {
 
 .createProblemButton:hover,
 .createProblemButton:focus {
-  background: #0053ba;
+  background: #7FD97F;
 }
 
 .createProblemButton:focus {
