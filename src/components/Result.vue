@@ -1,6 +1,7 @@
 <template>
   <div class="result">
-    <table>
+    <span>Result: </span> {{actualResult}}
+    <!-- <table>
       <tr>
         <td class="tableRowTitle">
           Actual result:
@@ -9,7 +10,7 @@
           {{actualResult}}
         </td>
       </tr>
-    </table>
+    </table> -->
   </div>
 </template>
 <script>
@@ -21,9 +22,8 @@ export default {
 </script>
 <style scoped>
   .result {
-    margin-top:30px;
+    display: inline-block;
   }
-
   .result table{
     border: 2px solid black;
     display: inline-block;

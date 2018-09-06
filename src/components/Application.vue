@@ -9,7 +9,6 @@
 import CustomHeader from './CustomHeader.vue'
 import UserInputHandler from './UserInputHandler.vue'
 import SimplexSolver from './SimplexSolver.vue'
-import _ from 'lodash'
 export default {
   components: {
     'customHeader': CustomHeader,

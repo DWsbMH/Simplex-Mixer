@@ -1,7 +1,6 @@
 <template>
-<div class="app">
-  <div class="slidersContainer">
-     <transition-group name="list-complete" tag="div" hidden>
+<div class="slidersPanel row">
+     <!-- <transition-group name="list-complete" tag="div" hidden>
       <span class="list-complete-item" v-for="(item, i) in items" :key="item.name">
         {{item.name}}
         <slider v-model="item.value" v-bind="item" :disabled="isIdInBase(i)"></slider>
@@ -13,29 +12,31 @@
         </p>
         <br/>
       </span>
-    </transition-group>
-    <transition-group name="list-complete" tag="div">
-      <div class="vueSliderContainer list-complete-item" v-for="(item, i) in items" :key="item.name + 'ff'">
-          {{item.name}}</br></br>
-          <sliderWrapper v-model="item.value" v-bind="item" :disabled="isIdInBase(i)"></sliderWrapper>
-          <p>
-            {{table[table.length-1][items[i].index].toFixed(3)}}
-          </p>
+    </transition-group> -->
+    <div class="container">
+        <transition-group name="list-complete" tag="div" class="slidersContainer">
+          <div class="vueSliderContainer list-complete-item" v-for="(item, i) in items" :key="item.name + 'ff'">
+            {{item.name}}</br></br>
+            <sliderWrapper v-model="item.value" v-bind="item" :disabled="isIdInBase(i)"></sliderWrapper>
+            <p>
+              {{table[table.length-1][items[i].index].toFixed(3)}}
+            </p>
+          </div>
+        </transition-group>
+      <div class="tttsContainer">
+        <table class="ttts">
+        <tr v-for="i in table.length" :key="i + '. row'">
+          <th>
+            {{items[baseIndexes[i-1]] ? items[baseIndexes[i-1]].name : "dT"}}
+          </th>
+          <td v-for="(item, index) in table[i-1]" :key="i + 'row' + index + 'column'">
+            {{item.toFixed(3)}}
+          </td>
+        </tr>
+      </table>
+        <result v-bind="result"></result>
       </div>
-    </transition-group>
-    <result v-bind="result"></result>
-    <table class="ttts">
-      <tr v-for="i in table.length" :key="i + '. row'">
-        <th>
-          {{items[baseIndexes[i-1]] ? items[baseIndexes[i-1]].name : "dT"}}
-        </th>
-        <td v-for="(item, index) in table[i-1]" :key="i + 'row' + index + 'column'">
-          {{item.toFixed(3)}}
-        </td>
-      </tr>
-    </table>
-
-  </div>
+    </div>
 </div>
 </template>
 <script>
@@ -86,9 +87,6 @@ export default {
     }
   },
   methods: {
-    testMethod: function() {
-      console.log("Coool");
-    },
     initProblem: function(problem) {
       console.log("Coool");
       this.problem = problem;
@@ -242,17 +240,20 @@ export default {
 </script>
 
 <style scoped>
-/* .app{
-  width: 1500px;
-} */
+.slidersContainer {
+  display: inline-block;
+}
+.tttsContainer {
+  display: inline-block;
+}
 .vueSliderContainer {
   display: inline-block;
 }
 .vueSlider {
   margin: 30px;
 }
-.slidersContainer {
-  height: 300px;
+.slidersPanel {
+  display: inline-block;
 }
 .list-complete-item {
   transition: all 1s;

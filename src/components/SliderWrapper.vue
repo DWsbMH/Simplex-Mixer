@@ -23,9 +23,6 @@
 
     </div> -->
     </div>
-    <div>
-      hello
-    </div>
 
   </div>
 </template>
@@ -115,15 +112,13 @@ export default {
   methods: {
     activateScalability: function() {
       this.scrollable = true;
-      document.documentElement.style.overflow = 'hidden';
-      document.documentElement.style.height = '100%';
-      document.documentElement.style.width = '100%';
+      // document.documentElement.style.overflow = 'hidden';
+      // document.documentElement.style.height = '100%';
+      // document.documentElement.style.width = '100%';
     },
     deactivateScalability: function() {
       this.scrollable = false;
-      document.documentElement.style.overflow = 'auto'
-      document.documentElement.style.height = 'auto';
-      document.documentElement.style.width = 'auto';
+      // document.documentElement.style.overflow = 'auto'
     },
     handleScroll: function(event) {
       if (this.scrollable) {
@@ -145,7 +140,6 @@ export default {
   }
   .vueSlider {
     margin: 30px;
-    display: inline;
   }
   div.vertical-line{
      width: 1px; /* Line width */
