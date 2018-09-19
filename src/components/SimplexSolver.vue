@@ -34,7 +34,10 @@
           </td>
         </tr>
       </table>
-        <result v-bind="result"></result>
+      <result v-bind="result"></result>
+      <div>
+        {{test()}}
+      </div>
       </div>
     </div>
 </div>
@@ -46,6 +49,8 @@ import SliderWrapper from './SliderWrapper.vue'
 import SampleExercise from './SampleExercise.vue'
 import vueSlider from 'vue-slider-component'
 import _ from 'lodash'
+import glpk from 'glpk.js'
+import {getInitialBase} from '../assets/js/initialBaseGenerator.js'
 export default {
   components: {
     'slider': Slider,
@@ -75,7 +80,6 @@ export default {
           this.result.actualResult += context.difference * this.table[this.table.length-1][context.generalElemColumnIndex];
           this.updateSliders(changedItem, context);
           var exittingIndex = this.getIndexWithZeroValue(this.baseIndexes, this.items);
-          console.log(context);
           if(!_.isUndefined(exittingIndex)) {
             this.updateSliderOrder(changedItem, exittingIndex);
             this.updateTable(context);
@@ -87,9 +91,10 @@ export default {
     }
   },
   methods: {
+    test: function() {
+      return getInitialBase();
+    },
     initProblem: function(problem) {
-      console.log("Coool");
-      this.problem = problem;
       var $table = [];
       for(var i=0; i < problem.A.length; i++) {
         var row = problem.A[i];
@@ -104,11 +109,6 @@ export default {
       var item = {};
       for (var i = 0; i <  $table[0].length-1; i++) {
         item.id = i;
-        item.direction = "vertical";
-        item.height = 600;
-        item.width = 5;
-        item.interval = 0.001;
-        item.isScalable = false;
         if (i < ($table[0].length-1) / 2) {
           item.value = $table[i][$table[0].length-1];
           item.max = $table[i][$table[0].length-1] + 2;
@@ -261,7 +261,7 @@ export default {
   margin-right: 10px;
 }
 .list-complete-enter, .list-complete-leave-to
-/* .list-complete-leave-active below version 2.1.8 */ {
+{
   opacity: 0;
   transform: translateY(30px);
 }

@@ -9,19 +9,9 @@
   </div>
 </template>
 <script>
-import * as parser from '../assets/js/parser.js'
-import example from '../assets/examples/example.txt'
-export default {
-  data() {
-    return {
-    }
-  }
-}
+export default {}
 </script>
 <style scoped>
-  .customHeader {
-  }
-
   .appTitle {
     font-size: 24px;
     margin: auto;

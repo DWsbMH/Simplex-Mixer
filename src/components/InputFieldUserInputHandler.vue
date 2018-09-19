@@ -51,7 +51,6 @@ export default {
       vector[index] = event.target.value;
     },
     setNumberOfRows: function() {
-      console.log(this.aMatrix);
       this.aMatrix[this.numberOfRow] = [];
       this.numberOfRow++;
     }

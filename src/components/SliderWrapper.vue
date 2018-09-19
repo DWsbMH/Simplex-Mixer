@@ -1,5 +1,8 @@
 <template>
-  <div class="sliderItem" @mouseover="activateScalability" @mouseleave="deactivateScalability" v-on:wheel="handleScroll">
+  <div class="sliderItem"
+  @mouseover="activateScalability"
+  @mouseleave="deactivateScalability"
+  v-on:wheel="handleScroll">
     <div class="vueSlider">
       {{mutableMax}}
       <vue-slider
@@ -59,12 +62,15 @@ export default {
       type: Boolean
     },
     direction: {
+      default: "vertical",
       type: String
     },
     height: {
+      default: 600,
       type: Number
     },
     width: {
+      default: 5,
       type: Number
     },
     processStyle: {
@@ -111,7 +117,7 @@ export default {
   },
   methods: {
     activateScalability: function() {
-      this.scrollable = true;
+      // this.scrollable = true;
       // document.documentElement.style.overflow = 'hidden';
       // document.documentElement.style.height = '100%';
       // document.documentElement.style.width = '100%';

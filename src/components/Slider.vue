@@ -101,9 +101,4 @@ export default {
     border-radius: 50%;
 }
 
-.sliderValue {
-  text-align: center;
-  font-size: 25px;
-}
-
 </style>

@@ -69,29 +69,22 @@ export default {
 .createProblem {
   background-color: #2980b9;
 }
-.customButton {
-
-}
-
 .problemEditor {
   margin-bottom: 30px;
   margin-top: 30px;
 }
-
 .textEditor {
   width: 100%;
   height: 400px;
   padding: 10px;
   font-family: 'Consolas'
 }
-
 .error {
   background-color: red;
   color: white;
   width: 100%;
   margin: auto;
 }
-
 .createProblemButton {
   display: inline-block;
   border: none;
@@ -108,17 +101,14 @@ export default {
   -webkit-appearance: none;
   -moz-appearance: none;
 }
-
 .createProblemButton:hover,
 .createProblemButton:focus {
   background: #7FD97F;
 }
-
 .createProblemButton:focus {
   outline: 1px solid #fff;
   outline-offset: -4px;
 }
-
 .createProblemButton:active {
   transform: scale(0.99);
 }
