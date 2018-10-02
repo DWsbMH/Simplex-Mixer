@@ -28,8 +28,8 @@
 </div>
 </template>
 <script>
-import * as parser from '../assets/js/parser.js'
-import example from '../assets/examples/example.txt'
+import * as parser from '../assets/js/parser2.js'
+import example from '../assets/examples/example0.txt'
 export default {
   data() {
     return {

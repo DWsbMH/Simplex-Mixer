@@ -4,7 +4,7 @@
   @mouseleave="deactivateScalability"
   v-on:wheel="handleScroll">
     <div class="vueSlider">
-      {{mutableMax}}
+      {{parseFloat(mutableMax).toFixed(2)}}
       <vue-slider
       ref="slider"
       v-model="mutableValue"

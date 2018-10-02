@@ -21,6 +21,7 @@
     "javascript-lp-solver": "^0.4.5",
     "jquery": "^3.3.1",
     "lodash": "^4.17.10",
+    "mathjs": "^5.1.2",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1",
     "vue-slider-component": "^2.7.4"

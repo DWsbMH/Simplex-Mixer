@@ -1,37 +1,16 @@
 import glpk from 'glpk.js'
 import _ from 'lodash'
 
-function getInitialBase () {
-   return glpk.solve(createModelFromProblem());
+function getInitialBase (problem) {
+   return glpk.solve(createModelFromProblem(problem));
 }
 
-function createModelFromProblem() {
-
-  var problem = {
-   "constraints": [
-      {
-         "x": 3,
-         "y": 4,
-         "max": 2
-      },
-      {
-         "x": 3,
-         "y": 4,
-         "max": 4
-      }
-   ],
-   "objective": {
-      "x": 1,
-      "y": 3
-   },
-   "target": "minimize"
-}
-
+function createModelFromProblem(problem) {
   var subjectTos = createSubjectTos(problem.constraints);
   return {
     name: 'LP',
     objective: {
-      direction: glpk.GLP_MAX,
+      direction: glpk.GLP_MIN,
       name: 'objective',
       vars: []
     },
@@ -90,7 +69,7 @@ function createType(key) {
   } else if (key === 'min') {
     type = glpk.GLP_LO;
   } else {
-    type = glpk.GLP_FX;
+    type = 5;
   }
   return type;
 }

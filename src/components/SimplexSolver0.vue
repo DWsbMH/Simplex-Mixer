@@ -1,0 +1,307 @@
+<template>
+<div class="slidersPanel row">
+    <div class="container">
+        <transition-group name="list-complete" tag="div" class="slidersContainer">
+          <div class="vueSliderContainer list-complete-item" v-for="(variable, i) in variables" :key="variable.name + 'ff'">
+            {{variable.name}}</br></br>
+            <sliderWrapper v-model="variable.value" v-bind="variable" :disabled="variable.isInBase"></sliderWrapper>
+            <div>
+              {{variable.reducedCost.toFixed(3)}}
+            </div>
+          </div>
+        </transition-group>
+        <result v-bind="result"></result>
+      <!-- <div class="tttsContainer">
+        <table class="ttts">
+        <tr v-for="i in table.length" :key="i + '. row'">
+          <th>
+            {{items[baseIndexes[i-1]] ? items[baseIndexes[i-1]].name : "dT"}}
+          </th>
+          <td v-for="(item, index) in table[i-1]" :key="i + 'row' + index + 'column'">
+            {{item.toFixed(3)}}
+          </td>
+        </tr>
+      </table>
+      <result v-bind="result"></result>
+      </div> -->
+    </div>
+</div>
+</template>
+<script>
+import Result from './Result.vue'
+import Slider from './Slider.vue'
+import SliderWrapper from './SliderWrapper.vue'
+import SampleExercise from './SampleExercise.vue'
+import vueSlider from 'vue-slider-component'
+import _ from 'lodash'
+import math from 'mathjs'
+export default {
+  components: {
+    'slider': Slider,
+    'sliderWrapper': SliderWrapper,
+    'result': Result,
+    vueSlider
+  },
+  data() {
+    return {
+      result: {
+        actualResult: 0
+      },
+      variables: [],
+      variablesCopy: [],
+      maxStep: undefined,
+      problem: {},
+      initialResult: {}
+    }
+  },
+  watch: {
+    variables: {
+      handler: function(newVal) {
+        var changedVariable = this.getChangedVariable(newVal, this.variables, this.variablesCopy);
+        if (!_.isUndefined(changedVariable)) {
+           this.variables[changedVariable.position].boundary = this.getMaxStep(changedVariable);
+           this.result.actualResult += changedVariable.difference * changedVariable.reducedCost;
+           var exittingVariable = this.transformVariables(changedVariable);
+           if(!_.isUndefined(exittingVariable)) {
+             this.doBaseChange(changedVariable, exittingVariable);
+             this.generateNewBase(changedVariable);
+             this.populateReducedCosts(this.problem);
+             this.maxStep = undefined;
+             // for (var i = 0; i < this.variables.length; i++) {
+             //     this.variables[i].boundary = undefined;
+             // }
+           }
+        }
+        this.variablesCopy = _.cloneDeep(this.variables);
+      },
+      deep: true
+    }
+  },
+  methods: {
+    initProblem: function(problem, initialResult) {
+      var variablesInBase = [];
+      var externalVariables = [];
+      var $this = this;
+
+      $this.problem = problem;
+      $this.initialResult = initialResult;
+
+      _.mapKeys(initialResult, function(value, key) {
+        var variable = {};
+        variable.value = value;
+        variable.name = key;
+        variable.columnVector = [];
+        if (value > 0) {
+          variable.max = value + 2;
+          variablesInBase.push(variable);
+          variable.isInBase = true;
+        } else {
+          variable.max = 5;
+          externalVariables.push(variable);
+          variable.isInBase = false;
+        }
+      });
+      $this.variables = _.concat(variablesInBase, externalVariables);
+
+      _.forEach(problem.constraints, function(constraint) {
+        var variable;
+        _.mapKeys(constraint, function(value, key) {
+          variable = $this.variables.find(function(variable){
+            return variable.name == key;
+          });
+          if (!_.isUndefined(variable)) {
+            variable.columnVector.push(value);
+          }
+        });
+      });
+
+      // var base = [];
+      // _.forEach($this.variables, function(variable) {
+      //   if (variable.isInBase) {
+      //     for (var i = 0; i < variable.columnVector.length; i++) {
+      //       if (base[i] == undefined) {
+      //           base[i] = [];
+      //       }
+      //       base[i].push(variable.columnVector[i]);
+      //     }
+      //   }
+      // });
+      // var inversedBase = math.inv(base);
+      //
+      // for (var i = 0; i < inversedBase.length; i++) {
+      //   for (var j = 0; j < inversedBase[i].length; j++) {
+      //     $this.variables[j].columnVector[i] = inversedBase[i][j];
+      //   }
+      // }
+
+      this.populateReducedCosts(problem);
+
+     $this.variablesCopy = _.cloneDeep($this.variables);
+    },
+    populateReducedCosts: function(problem) {
+      var $this = this;
+      var cTB = [];
+      _.forEach($this.variables, function(variable) {
+        if (variable.isInBase) {
+          cTB.push(problem.objective[variable.name] != undefined ? problem.objective[variable.name] : 0);
+        }
+      });
+
+      _.forEach(this.variables, function(variable) {
+        var reducedCost = 0;
+        if (!variable.isInBase) {
+          var c = problem.objective[variable.name] != undefined ? problem.objective[variable.name] : 0;
+          // console.log(variable.name, c, "-", cTB, variable.columnVector);
+          reducedCost = c - math.multiply(cTB, variable.columnVector);
+        }
+        variable.reducedCost = reducedCost;
+      });
+    },
+    getChangedVariable: function(newVal, variables, variablesCopy) {
+      var result;
+      for (var i = 0; i < variables.length; i++) {
+        if (variables[i].value != variablesCopy[i].value) {
+          result = {
+            name: variables[i].name,
+            difference: variables[i].value - variablesCopy[i].value,
+            reducedCost: variables[i].reducedCost,
+            position: i,
+            columnVector: variables[i].columnVector
+          }
+        }
+      }
+      return result;
+    },
+    getMaxStep: function(changedVariable) {
+      var $this = this;
+      if (_.isUndefined(this.maxStep)) {
+        var quotiens = this.getQuotients(changedVariable.columnVector);
+        this.maxStep = this.getMin(quotiens.map(quotient => quotient.value));
+        var quotient = quotiens.find(function(quotient){
+          return quotient.value == $this.maxStep;
+        });
+        this.p = quotient.position;
+      }
+      return this.maxStep;
+    },
+    getQuotients: function(columnVector) {
+      var quotients = [];
+      var baseValue;
+      for (var i = 0; i < columnVector.length; i++) {
+        if (columnVector[i] > 0) {
+          baseValue = this.variables[i].isInBase ? this.variables[i].value : 0;
+          quotients.push({
+            value: baseValue / columnVector[i],
+            position: i
+          });
+        }
+      }
+      if (quotients.length == 0) {
+        alert("The solution doesn't have any boundary!");
+      }
+      return quotients;
+    },
+    getMin: function(items) {
+      return Math.min(...items);
+    },
+    transformVariables: function(changedVariable) {
+      var variable;
+      var exittingVariable;
+      for (var i = 0; i < this.variables.length; i++) {
+        variable = this.variables[i];
+        if (variable.isInBase) {
+          console.log(variable.name,variable.value, "-", changedVariable.difference, "*", changedVariable.columnVector[i]);
+          var newValue = variable.value - changedVariable.difference * changedVariable.columnVector[i];
+          if (parseFloat(newValue).toFixed(3) > 0) {
+            variable.value = newValue;
+          } else {
+            variable.value = 0;
+            exittingVariable = {
+              name: variable.name,
+              position: i
+            }
+          }
+          variable.boundary = undefined;
+        }
+      }
+      return exittingVariable;
+    },
+    doBaseChange: function(changedVariable, exittingVariable) {
+      var tmp = this.variables[exittingVariable.position];
+      this.variables[exittingVariable.position] = this.variables[changedVariable.position];
+      this.variables[exittingVariable.position].isInBase = true;
+      this.variables[changedVariable.position] = tmp;
+      this.variables[changedVariable.position].isInBase = false;
+    },
+    generateNewBase: function(changedVariable) {
+      var generalElem = changedVariable.columnVector[this.p];
+      // calculate general element row
+      for (var i = 0; i < this.variables.length; i++) {
+          this.variables[i].columnVector[this.p] *= (1/generalElem);
+      }
+      // generate rows except the general element row
+      for (var i = 0; i < this.variables.length; i++) {
+        if (this.variables[i].name !== changedVariable.name) {
+          for(var j = 0; j < this.variables[i].columnVector.length; j++) {
+            if (this.p !== j) {
+              this.variables[i].columnVector[j] -= changedVariable.columnVector[j] * this.variables[i].columnVector[this.p];
+            }
+          }
+        }
+      }
+      // calculate general element column
+      var variable = this.variables.find(function(variable){
+        return variable.name == changedVariable.name;
+      });
+      for(var j = 0; j < variable.columnVector.length; j++) {
+        if (this.p !== j) {
+          variable.columnVector[j] -= changedVariable.columnVector[j] * variable.columnVector[this.p];
+        }
+      }
+
+    }
+  }
+}
+</script>
+
+<style scoped>
+.slidersContainer {
+  display: inline-block;
+}
+.tttsContainer {
+  display: inline-block;
+}
+.vueSliderContainer {
+  display: inline-block;
+}
+.vueSlider {
+  margin: 30px;
+}
+.slidersPanel {
+  display: inline-block;
+}
+.list-complete-item {
+  transition: all 1s;
+  display: inline-block;
+  margin-right: 10px;
+}
+.list-complete-enter, .list-complete-leave-to
+{
+  opacity: 0;
+  transform: translateY(30px);
+}
+.list-complete-leave-active {
+  position: absolute;
+}
+.ttts {
+  border-collapse: collapse;
+}
+.ttts td, .ttts th {
+  padding: 5px;
+}
+.ttts, .ttts th, .ttts td {
+  margin: auto;
+  margin-bottom: 50px;
+  border: 1px solid black;
+}
+</style>

@@ -1,0 +1,9 @@
+var x;
+var z;
+var u;
+
+s.t. asd: 2*x + 3*z       <= 8;
+s.t. dsa: 2*z + 5*u       <= 10;
+s.t. fds: 3*x + 2*z + 4*u <= 15;
+
+minimize target: -3*x - 5*z - 4*u;
