@@ -1175,6 +1175,7 @@ module.exports = /*
          var variables=[];
          var artificalVariables=[];
          var logicalVariables=[];
+         var baseVariables = [];
          var constraints=[];
          var objective;
          var target;
@@ -1207,24 +1208,30 @@ module.exports = /*
          }
 
          function transformConstraint(constraint, relation, tempConstraint) {
-         	var artificalVariableName;
          	if (relation === "<=") {
-            	artificalVariableName = "y" + logicalVariableCounter++;
-            	constraint[artificalVariableName] = 1;
-                logicalVariables.push(artificalVariableName);
+            	var logicalVariableName = "y" + logicalVariableCounter++;
+            	constraint[logicalVariableName] = 1;
+                logicalVariables.push(logicalVariableName);
+                baseVariables.push(logicalVariableName);
+                variables.push(logicalVariableName);
             } else if (relation === ">=") {
             	var logicalVariableName = "y" + logicalVariableCounter++;
-            	artificalVariableName = "x" + artificalVariableCounter++;
+            	var artificalVariableName = "x" + artificalVariableCounter++;
                 constraint[logicalVariableName] = -1;
                 constraint[artificalVariableName] = 1;
                 variables.push(logicalVariableName);
+                variables.push(artificalVariableName);
                 logicalVariables.push(logicalVariableName);
+                artificalVariables.push(artificalVariableName);
+                baseVariables.push(artificalVariableName);
             } else {
-            	artificalVariableName = "x" + artificalVariableCounter++;
+            	var artificalVariableName = "x" + artificalVariableCounter++;
             	constraint[artificalVariableName] = 1;
+                artificalVariables.push(artificalVariableName);
+                baseVariables.push(artificalVariableName);
+                variables.push(artificalVariableName);
             }
-            artificalVariables.push(artificalVariableName);
-            variables.push(artificalVariableName);
+
             constraint["equalTo"] = tempConstraint;
             return constraint;
          }
@@ -1252,6 +1259,7 @@ module.exports = /*
             result.variables = variables;
             result.artificalVariables = artificalVariables;
             result.logicalVariables = logicalVariables;
+            result.baseVariables = baseVariables;
          	return result;
          }
 

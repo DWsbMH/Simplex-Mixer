@@ -2,8 +2,8 @@
 <div class="app">
   <customHeader></customHeader>
   <userInputHandler v-if="problem === undefined" @problemReady="initProblem"></userInputHandler>
-  <firstPhaseSolver ref="firstPhaseSolver"/>
-  <simplexSolver ref="simplexSolver" v-show="problem !== undefined" ></simplexSolver>
+  <firstPhaseSolver ref="firstPhaseSolver" @feasibleSolutionFound="initSecondPhase" v-show="!isSecondPhaseInitialized && problem !== undefined"/>
+  <simplexSolver id="secondPhase" ref="simplexSolver" v-show="isSecondPhaseInitialized" ></simplexSolver>
 </div>
 </template>
 <script>
@@ -21,19 +21,19 @@ export default {
   },
   data() {
     return {
-      problem: undefined
+      problem: undefined,
+      isSecondPhaseInitialized: false
     }
   },
   methods: {
     initProblem: function(problem) {
-      var initialResult = getInitialBase(problem);
-    //  if (initialResult.status === 5) {
-      console.log(this.$refs.firstPhaseSolver.getFeasibleSolution(problem));
-      this.$refs.simplexSolver.initProblem(problem, initialResult.result.vars);
+      // var initialResult = getInitialBase(problem);
       this.problem = problem;
-      // } else {
-      //   alert("The given problem hasn't any solution");
-      // }
+      this.$refs.firstPhaseSolver.getFeasibleSolution(problem);
+    },
+    initSecondPhase: function(feasibleSolution) {
+      this.isSecondPhaseInitialized = true;
+      this.$refs.simplexSolver.initProblem(this.problem, feasibleSolution);
     }
   }
 }

@@ -22,9 +22,6 @@
       :class="{scrollableClass: scrollable}"
       >
     </vue-slider>
-    <!-- <div class="vertical-line">
-
-    </div> -->
     </div>
 
   </div>
@@ -147,9 +144,4 @@ export default {
   .vueSlider {
     margin: 30px;
   }
-  div.vertical-line{
-     width: 1px; /* Line width */
-     background-color: black; /* Line color */
-     height: 100px; /* Override in-line if you want specific height. */
-   }
 </style>

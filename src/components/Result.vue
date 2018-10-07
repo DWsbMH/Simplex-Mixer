@@ -1,6 +1,6 @@
 <template>
   <div class="result">
-    <span>Result: </span> {{actualResult}}
+    <span>Result: </span> {{parseFloat(actualResult).toFixed(3)}}
   </div>
 </template>
 <script>

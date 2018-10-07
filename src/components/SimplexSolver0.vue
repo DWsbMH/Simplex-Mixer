@@ -4,13 +4,14 @@
         <transition-group name="list-complete" tag="div" class="slidersContainer">
           <div class="vueSliderContainer list-complete-item" v-for="(variable, i) in variables" :key="variable.name + 'ff'">
             {{variable.name}}</br></br>
-            <sliderWrapper v-model="variable.value" v-bind="variable" :disabled="variable.isInBase"></sliderWrapper>
+            <sliderWrapper v-model="variable.value" v-bind="variable" :disabled="variable.isInBase" @valueChanged="valueChanged(variable)"/>
             <div>
               {{variable.reducedCost.toFixed(3)}}
             </div>
           </div>
         </transition-group>
         <result v-bind="result"></result>
+        <chartHandler ref="chartHandler"/>
       <!-- <div class="tttsContainer">
         <table class="ttts">
         <tr v-for="i in table.length" :key="i + '. row'">
@@ -32,6 +33,7 @@ import Result from './Result.vue'
 import Slider from './Slider.vue'
 import SliderWrapper from './SliderWrapper.vue'
 import SampleExercise from './SampleExercise.vue'
+import ChartHandler from './ChartHandler.vue'
 import vueSlider from 'vue-slider-component'
 import _ from 'lodash'
 import math from 'mathjs'
@@ -40,6 +42,7 @@ export default {
     'slider': Slider,
     'sliderWrapper': SliderWrapper,
     'result': Result,
+    'chartHandler': ChartHandler,
     vueSlider
   },
   data() {
@@ -50,8 +53,7 @@ export default {
       variables: [],
       variablesCopy: [],
       maxStep: undefined,
-      problem: {},
-      initialResult: {}
+      problem: {}
     }
   },
   watch: {
@@ -62,14 +64,19 @@ export default {
            this.variables[changedVariable.position].boundary = this.getMaxStep(changedVariable);
            this.result.actualResult += changedVariable.difference * changedVariable.reducedCost;
            var exittingVariable = this.transformVariables(changedVariable);
+           this.$refs.chartHandler.addResult(this.result.actualResult, this.variables);
            if(!_.isUndefined(exittingVariable)) {
              this.doBaseChange(changedVariable, exittingVariable);
              this.generateNewBase(changedVariable);
              this.populateReducedCosts(this.problem);
              this.maxStep = undefined;
-             // for (var i = 0; i < this.variables.length; i++) {
-             //     this.variables[i].boundary = undefined;
-             // }
+             var isOptimalSolution = _.every(this.variables, function(variable) {
+               return variable.reducedCost >= 0;
+             });
+             if (isOptimalSolution) {
+               console.log("optimalFound");
+               this.$emit('optimalSolutionFound', _.cloneDeep(this.variables));
+             }
            }
         }
         this.variablesCopy = _.cloneDeep(this.variables);
@@ -78,42 +85,49 @@ export default {
     }
   },
   methods: {
-    initProblem: function(problem, initialResult) {
+    initProblem: function(problem, feasibleSolution) {
       var variablesInBase = [];
       var externalVariables = [];
       var $this = this;
 
       $this.problem = problem;
-      $this.initialResult = initialResult;
+      $this.variables = feasibleSolution.variables;
 
-      _.mapKeys(initialResult, function(value, key) {
-        var variable = {};
-        variable.value = value;
-        variable.name = key;
-        variable.columnVector = [];
-        if (value > 0) {
-          variable.max = value + 2;
-          variablesInBase.push(variable);
-          variable.isInBase = true;
-        } else {
-          variable.max = 5;
-          externalVariables.push(variable);
-          variable.isInBase = false;
-        }
+      _.forEach($this.variables, function(variable) {
+        var multiplier = problem.objective[variable.name] != undefined ? problem.objective[variable.name] : 0;
+        $this.result.actualResult += multiplier * variable.value;
       });
-      $this.variables = _.concat(variablesInBase, externalVariables);
 
-      _.forEach(problem.constraints, function(constraint) {
-        var variable;
-        _.mapKeys(constraint, function(value, key) {
-          variable = $this.variables.find(function(variable){
-            return variable.name == key;
-          });
-          if (!_.isUndefined(variable)) {
-            variable.columnVector.push(value);
-          }
-        });
-      });
+      $this.$refs.chartHandler.addResult($this.result.actualResult, $this.variables);
+
+      // _.mapKeys(initialResult, function(value, key) {
+      //   var variable = {};
+      //   variable.value = value;
+      //   variable.name = key;
+      //   variable.columnVector = [];
+      //   if (value > 0) {
+      //     variable.max = value + 2;
+      //     variablesInBase.push(variable);
+      //     variable.isInBase = true;
+      //   } else {
+      //     variable.max = 5;
+      //     externalVariables.push(variable);
+      //     variable.isInBase = false;
+      //   }
+      // });
+      // $this.variables = _.concat(variablesInBase, externalVariables);
+
+      // _.forEach(problem.constraints, function(constraint) {
+      //   var variable;
+      //   _.mapKeys(constraint, function(value, key) {
+      //     variable = $this.variables.find(function(variable){
+      //       return variable.name == key;
+      //     });
+      //     if (!_.isUndefined(variable)) {
+      //       variable.columnVector.push(value);
+      //     }
+      //   });
+      // });
 
       // var base = [];
       // _.forEach($this.variables, function(variable) {
@@ -139,9 +153,8 @@ export default {
      $this.variablesCopy = _.cloneDeep($this.variables);
     },
     populateReducedCosts: function(problem) {
-      var $this = this;
       var cTB = [];
-      _.forEach($this.variables, function(variable) {
+      _.forEach(this.variables, function(variable) {
         if (variable.isInBase) {
           cTB.push(problem.objective[variable.name] != undefined ? problem.objective[variable.name] : 0);
         }
@@ -210,7 +223,7 @@ export default {
       for (var i = 0; i < this.variables.length; i++) {
         variable = this.variables[i];
         if (variable.isInBase) {
-          console.log(variable.name,variable.value, "-", changedVariable.difference, "*", changedVariable.columnVector[i]);
+          // console.log(variable.name,variable.value, "-", changedVariable.difference, "*", changedVariable.columnVector[i]);
           var newValue = variable.value - changedVariable.difference * changedVariable.columnVector[i];
           if (parseFloat(newValue).toFixed(3) > 0) {
             variable.value = newValue;
@@ -258,7 +271,6 @@ export default {
           variable.columnVector[j] -= changedVariable.columnVector[j] * variable.columnVector[this.p];
         }
       }
-
     }
   }
 }
