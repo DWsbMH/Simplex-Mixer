@@ -3,20 +3,19 @@
   <customHeader></customHeader>
   <userInputHandler v-if="problem === undefined" @problemReady="initProblem"></userInputHandler>
   <firstPhaseSolver ref="firstPhaseSolver" @feasibleSolutionFound="initSecondPhase" v-show="!isSecondPhaseInitialized && problem !== undefined"/>
-  <simplexSolver id="secondPhase" ref="simplexSolver" v-show="isSecondPhaseInitialized" ></simplexSolver>
+  <secondPhaseSolver ref="secondPhaseSolver" v-show="isSecondPhaseInitialized"/>
 </div>
 </template>
 <script>
 import CustomHeader from './CustomHeader.vue'
 import UserInputHandler from './UserInputHandler.vue'
-import SimplexSolver from './SimplexSolver0.vue'
+import SecondPhaseSolver from './SecondPhaseSolver.vue'
 import FirstPhaseSolver from './FirstPhaseSolver.vue'
-import {getInitialBase} from '../assets/js/initialBaseGenerator.js'
 export default {
   components: {
     'customHeader': CustomHeader,
     'userInputHandler': UserInputHandler,
-    'simplexSolver': SimplexSolver,
+    'secondPhaseSolver': SecondPhaseSolver,
     'FirstPhaseSolver': FirstPhaseSolver
   },
   data() {
@@ -27,13 +26,12 @@ export default {
   },
   methods: {
     initProblem: function(problem) {
-      // var initialResult = getInitialBase(problem);
       this.problem = problem;
       this.$refs.firstPhaseSolver.getFeasibleSolution(problem);
     },
     initSecondPhase: function(feasibleSolution) {
       this.isSecondPhaseInitialized = true;
-      this.$refs.simplexSolver.initProblem(this.problem, feasibleSolution);
+      this.$refs.secondPhaseSolver.initSecondPhase(this.problem, feasibleSolution);
     }
   }
 }

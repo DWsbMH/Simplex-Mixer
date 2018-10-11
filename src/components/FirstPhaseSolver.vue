@@ -7,6 +7,25 @@
     </p>
   </div>
   <simplexSolver ref="simplexSolver" @optimalSolutionFound="handleSolution"></simplexSolver>
+  <div>
+    <b-modal id="feasibleSolutionFoundModal" title="Congratulations!">
+      <p class="my-4">You have found a feasible solution by reducing all artifical variables value to zero.</p>
+      <div slot="modal-footer">
+        <b-btn size="sm" class="float-right" variant="success">
+          Next
+        </b-btn>
+      </div>
+    </b-modal>
+    <b-modal id="noFeasibleSolutionModal" title="Oops!">
+      <p class="my-4">Unfortunattely, the given problem has no feasible solution.</p>
+      <p class="my-4">Please try another one.</p>
+      <div slot="modal-footer">
+        <b-btn size="sm" class="float-right" variant="primary" href="/">
+          Go
+        </b-btn>
+      </div>
+    </b-modal>
+  </div>
 </div>
 </template>
 <script>
@@ -21,13 +40,19 @@ export default {
   data() {
     return {
       hasFeasibleSolution: false,
-      showMessages: false
+      showMessages: false,
+      modifiedProblem: undefined
     }
   },
   methods: {
     handleSolution: function(optimalSolution) {
-      this.hasFeasibleSolution = true;
-      this.$emit('feasibleSolutionFound', {variables: optimalSolution});
+      if (parseFloat(optimalSolution.result).toFixed(5) > 0) {
+         this.$root.$emit('bv::show::modal','noFeasibleSolutionModal')
+      } else {
+        this.$root.$emit('bv::show::modal','feasibleSolutionFoundModal')
+        this.hasFeasibleSolution = true;
+        this.$emit('feasibleSolutionFound', {variables: optimalSolution.variables});
+      }
     },
     getFeasibleSolution: function(problem) {
       var $this = this;
@@ -81,6 +106,11 @@ export default {
         }
       });
       return variables;
+    },
+    removeArtificalVariables: function(solution) {
+      return _.remove(solution, function(variable, problem) {
+        return _.icludes(problem.artificalVariables, variable.name);
+      });
     }
   }
 }

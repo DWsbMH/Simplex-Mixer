@@ -4,7 +4,7 @@
         <transition-group name="list-complete" tag="div" class="slidersContainer">
           <div class="vueSliderContainer list-complete-item" v-for="(variable, i) in variables" :key="variable.name + 'ff'">
             {{variable.name}}</br></br>
-            <sliderWrapper v-model="variable.value" v-bind="variable" :disabled="variable.isInBase" @valueChanged="valueChanged(variable)"/>
+            <sliderWrapper v-model="variable.value" v-bind="variable" :disabled="isDisabled(variable)"/>
             <div>
               {{variable.reducedCost.toFixed(3)}}
             </div>
@@ -53,7 +53,8 @@ export default {
       variables: [],
       variablesCopy: [],
       maxStep: undefined,
-      problem: {}
+      problem: {},
+      changingVariable: undefined
     }
   },
   watch: {
@@ -61,6 +62,7 @@ export default {
       handler: function(newVal) {
         var changedVariable = this.getChangedVariable(newVal, this.variables, this.variablesCopy);
         if (!_.isUndefined(changedVariable)) {
+           this.changingVariable = changedVariable.name;
            this.variables[changedVariable.position].boundary = this.getMaxStep(changedVariable);
            this.result.actualResult += changedVariable.difference * changedVariable.reducedCost;
            var exittingVariable = this.transformVariables(changedVariable);
@@ -70,12 +72,17 @@ export default {
              this.generateNewBase(changedVariable);
              this.populateReducedCosts(this.problem);
              this.maxStep = undefined;
+             this.changingVariable = undefined;
              var isOptimalSolution = _.every(this.variables, function(variable) {
                return variable.reducedCost >= 0;
              });
              if (isOptimalSolution) {
                console.log("optimalFound");
-               this.$emit('optimalSolutionFound', _.cloneDeep(this.variables));
+               var optimalSolution = {
+                 variables: _.cloneDeep(this.variables),
+                 result: this.result.actualResult
+               }
+               this.$emit('optimalSolutionFound', optimalSolution);
              }
            }
         }
@@ -99,58 +106,8 @@ export default {
       });
 
       $this.$refs.chartHandler.addResult($this.result.actualResult, $this.variables);
-
-      // _.mapKeys(initialResult, function(value, key) {
-      //   var variable = {};
-      //   variable.value = value;
-      //   variable.name = key;
-      //   variable.columnVector = [];
-      //   if (value > 0) {
-      //     variable.max = value + 2;
-      //     variablesInBase.push(variable);
-      //     variable.isInBase = true;
-      //   } else {
-      //     variable.max = 5;
-      //     externalVariables.push(variable);
-      //     variable.isInBase = false;
-      //   }
-      // });
-      // $this.variables = _.concat(variablesInBase, externalVariables);
-
-      // _.forEach(problem.constraints, function(constraint) {
-      //   var variable;
-      //   _.mapKeys(constraint, function(value, key) {
-      //     variable = $this.variables.find(function(variable){
-      //       return variable.name == key;
-      //     });
-      //     if (!_.isUndefined(variable)) {
-      //       variable.columnVector.push(value);
-      //     }
-      //   });
-      // });
-
-      // var base = [];
-      // _.forEach($this.variables, function(variable) {
-      //   if (variable.isInBase) {
-      //     for (var i = 0; i < variable.columnVector.length; i++) {
-      //       if (base[i] == undefined) {
-      //           base[i] = [];
-      //       }
-      //       base[i].push(variable.columnVector[i]);
-      //     }
-      //   }
-      // });
-      // var inversedBase = math.inv(base);
-      //
-      // for (var i = 0; i < inversedBase.length; i++) {
-      //   for (var j = 0; j < inversedBase[i].length; j++) {
-      //     $this.variables[j].columnVector[i] = inversedBase[i][j];
-      //   }
-      // }
-
       this.populateReducedCosts(problem);
-
-     $this.variablesCopy = _.cloneDeep($this.variables);
+      $this.variablesCopy = _.cloneDeep($this.variables);
     },
     populateReducedCosts: function(problem) {
       var cTB = [];
@@ -245,6 +202,7 @@ export default {
       this.variables[exittingVariable.position].isInBase = true;
       this.variables[changedVariable.position] = tmp;
       this.variables[changedVariable.position].isInBase = false;
+      this.removeExittingVariableIfNeccessary(this.variables[changedVariable.position]);
     },
     generateNewBase: function(changedVariable) {
       var generalElem = changedVariable.columnVector[this.p];
@@ -270,6 +228,20 @@ export default {
         if (this.p !== j) {
           variable.columnVector[j] -= changedVariable.columnVector[j] * variable.columnVector[this.p];
         }
+      }
+    },
+    isDisabled: function(variable) {
+      return variable.isInBase || (!_.isUndefined(this.changingVariable) && this.changingVariable != variable.name);
+    },
+    removeExittingVariableIfNeccessary: function(variable) {
+      var index;
+      for (var i = 0; i < this.variables.length; i++) {
+        if (this.variables[i].name === variable.name) {
+          index = i;
+        }
+      }
+      if (_.includes(this.problem.artificalVariables, variable.name) || _.includes(this.problem.logicalVariables, variable.name)) {
+        this.variables.splice(index, 1);
       }
     }
   }
