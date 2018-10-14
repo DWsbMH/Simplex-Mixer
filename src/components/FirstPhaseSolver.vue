@@ -1,6 +1,6 @@
 <template>
 <div>
-  <div v-show="showMessages">
+  <div class="description" v-show="showMessages">
     <h1>First challange!</h1>
     <p>
       You need to a feasible solution. For this, you have to find an optimal solution for the modified problem where the sum of the artifical variables is the target function.
@@ -117,5 +117,7 @@ export default {
 </script>
 
 <style scoped>
-
+  .description {
+    background-color: #f6f6f6;
+  }
 </style>

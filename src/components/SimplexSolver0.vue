@@ -1,9 +1,11 @@
 <template>
-<div class="slidersPanel row">
-    <div class="container">
-        <transition-group name="list-complete" tag="div" class="slidersContainer">
-          <div class="vueSliderContainer list-complete-item" v-for="(variable, i) in variables" :key="variable.name + 'ff'">
-            {{variable.name}}</br></br>
+<div>
+    <div class="container slidersContainer">
+        <transition-group name="list-complete" tag="div">
+          <div class="vueSliderContainer list-complete-item" v-for="(variable, i) in variables" :key="variable.name">
+            <div class="variableName" :class="{baseVariable: variable.isInBase}">
+              {{variable.name}}
+            </div>
             <sliderWrapper v-model="variable.value" v-bind="variable" :disabled="isDisabled(variable)"/>
             <div>
               {{variable.reducedCost.toFixed(3)}}
@@ -11,38 +13,30 @@
           </div>
         </transition-group>
         <result v-bind="result"></result>
-        <chartHandler ref="chartHandler"/>
-      <!-- <div class="tttsContainer">
-        <table class="ttts">
-        <tr v-for="i in table.length" :key="i + '. row'">
-          <th>
-            {{items[baseIndexes[i-1]] ? items[baseIndexes[i-1]].name : "dT"}}
-          </th>
-          <td v-for="(item, index) in table[i-1]" :key="i + 'row' + index + 'column'">
-            {{item.toFixed(3)}}
-          </td>
-        </tr>
-      </table>
-      <result v-bind="result"></result>
-      </div> -->
+    </div>
+    <div class="tablesContainer">
+      <div class="container tablesContainer" ref="tablesContainer"></div>
+    </div>
+    <div class="container">
+      <chartHandler ref="chartHandler"/>
     </div>
 </div>
 </template>
 <script>
+import Vue from 'vue'
 import Result from './Result.vue'
-import Slider from './Slider.vue'
 import SliderWrapper from './SliderWrapper.vue'
-import SampleExercise from './SampleExercise.vue'
 import ChartHandler from './ChartHandler.vue'
+import SimplexTable from './SimplexTable.vue'
 import vueSlider from 'vue-slider-component'
 import _ from 'lodash'
 import math from 'mathjs'
 export default {
   components: {
-    'slider': Slider,
     'sliderWrapper': SliderWrapper,
     'result': Result,
     'chartHandler': ChartHandler,
+    'simplexTable': SimplexTable,
     vueSlider
   },
   data() {
@@ -54,7 +48,8 @@ export default {
       variablesCopy: [],
       maxStep: undefined,
       problem: {},
-      changingVariable: undefined
+      changingVariable: undefined,
+      iterationCounter: 0
     }
   },
   watch: {
@@ -71,6 +66,7 @@ export default {
              this.doBaseChange(changedVariable, exittingVariable);
              this.generateNewBase(changedVariable);
              this.populateReducedCosts(this.problem);
+             this.addTable(++this.iterationCounter);
              this.maxStep = undefined;
              this.changingVariable = undefined;
              var isOptimalSolution = _.every(this.variables, function(variable) {
@@ -104,10 +100,21 @@ export default {
         var multiplier = problem.objective[variable.name] != undefined ? problem.objective[variable.name] : 0;
         $this.result.actualResult += multiplier * variable.value;
       });
-
-      $this.$refs.chartHandler.addResult($this.result.actualResult, $this.variables);
+      $this.$refs.chartHandler.init($this.result.actualResult, $this.variables);
       this.populateReducedCosts(problem);
+      $this.addTable(undefined);
       $this.variablesCopy = _.cloneDeep($this.variables);
+    },
+    addTable: function(iterationCounter) {
+      var ComponentClass = Vue.extend(SimplexTable)
+      var instance = new ComponentClass({
+          propsData: {
+            variables: _.cloneDeep(this.variables),
+            iterationNumber: iterationCounter
+          }
+      })
+      instance.$mount() // pass nothing
+      this.$refs.tablesContainer.appendChild(instance.$el)
     },
     populateReducedCosts: function(problem) {
       var cTB = [];
@@ -249,19 +256,14 @@ export default {
 </script>
 
 <style scoped>
-.slidersContainer {
-  display: inline-block;
+.variableName {
+  color: blue;
+  font: 17px Georgia, serif;
 }
-.tttsContainer {
-  display: inline-block;
+.baseVariable {
+  color: green;
 }
 .vueSliderContainer {
-  display: inline-block;
-}
-.vueSlider {
-  margin: 30px;
-}
-.slidersPanel {
   display: inline-block;
 }
 .list-complete-item {
@@ -277,15 +279,13 @@ export default {
 .list-complete-leave-active {
   position: absolute;
 }
-.ttts {
-  border-collapse: collapse;
+.tablesContainer {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  padding: 10px;
+  background-color: #2980b9;
 }
-.ttts td, .ttts th {
-  padding: 5px;
-}
-.ttts, .ttts th, .ttts td {
-  margin: auto;
-  margin-bottom: 50px;
-  border: 1px solid black;
+.slidersContainer {
+  padding: 15px;
 }
 </style>

@@ -1,8 +1,6 @@
 <template>
 <!-- <vue-c3 :handler="handler"></vue-c3> -->
-<div ref="resultChart" id="resultChart">
-
-</div>
+<div ref="resultChart" id="resultChart"/>
 </template>
 <script>
 import c3 from 'c3'
@@ -33,27 +31,27 @@ export default {
           }
         }
       });
+    },
+    init: function(initalResult, variables) {
+      var $this = this;
+      $this.chartData.push(initalResult);
+      setTimeout(function(){
+        $this.chart = c3.generate({
+          bindto: $this.$refs.resultChart,
+          data: {
+            columns: [
+              $this.chartData
+            ]
+          }
+        });
+      }, 100);
     }
   },
   mounted() {
-    this.chart = c3.generate({
-      bindto: this.$refs.resultChart,
-      data: {
-        columns: [
-          this.chartData
-        ],
-        tooltip: {
-          contents: function(d, defaultTitleFormat, defaultValueFormat, color) {
-                console.log("adsasd");
-                return '<div>Show what you want</div>';
-          }
-        }
-      }
-    });
+
   }
 }
 </script>
 
 <style scoped>
-
 </style>
