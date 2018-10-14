@@ -1,11 +1,16 @@
 <template>
   <div id="app">
+    <customHeader></customHeader>
     <router-view/>
   </div>
 </template>
 
 <script>
+import CustomHeader from './components/CustomHeader.vue'
 export default {
+  components: {
+    'customHeader': CustomHeader
+  },
   name: 'App'
 }
 </script>

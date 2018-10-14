@@ -8,20 +8,20 @@
   </div>
   <simplexSolver ref="simplexSolver" @optimalSolutionFound="handleSolution"></simplexSolver>
   <div>
-    <b-modal id="feasibleSolutionFoundModal" title="Congratulations!">
+    <b-modal id="feasibleSolutionFoundModal" ref="feasibleSolutionFoundModal" title="Congratulations!">
       <p class="my-4">You have found a feasible solution by reducing all artifical variables value to zero.</p>
       <div slot="modal-footer">
-        <b-btn size="sm" class="float-right" variant="success">
+        <b-btn size="sm" class="float-right" variant="success" @click="fireFeasibleSolutionFoundEvent">
           Next
         </b-btn>
       </div>
     </b-modal>
-    <b-modal id="noFeasibleSolutionModal" title="Oops!">
+    <b-modal id="noFeasibleSolutionModal" ref="noFeasibleSolutionModal" title="Oops!">
       <p class="my-4">Unfortunattely, the given problem has no feasible solution.</p>
       <p class="my-4">Please try another one.</p>
       <div slot="modal-footer">
         <b-btn size="sm" class="float-right" variant="primary" href="/">
-          Go
+          Next
         </b-btn>
       </div>
     </b-modal>
@@ -41,7 +41,8 @@ export default {
     return {
       hasFeasibleSolution: false,
       showMessages: false,
-      modifiedProblem: undefined
+      modifiedProblem: undefined,
+      optimalSolution: undefined
     }
   },
   methods: {
@@ -49,10 +50,14 @@ export default {
       if (parseFloat(optimalSolution.result).toFixed(5) > 0) {
          this.$root.$emit('bv::show::modal','noFeasibleSolutionModal')
       } else {
+        this.optimalSolution = optimalSolution;
         this.$root.$emit('bv::show::modal','feasibleSolutionFoundModal')
-        this.hasFeasibleSolution = true;
-        this.$emit('feasibleSolutionFound', {variables: optimalSolution.variables});
       }
+    },
+    fireFeasibleSolutionFoundEvent: function() {
+      this.$refs.feasibleSolutionFoundModal.hide();
+      this.hasFeasibleSolution = true;
+      this.$emit('feasibleSolutionFound', {variables: this.optimalSolution.variables});
     },
     getFeasibleSolution: function(problem) {
       var $this = this;

@@ -1,5 +1,4 @@
 <template>
-<!-- <vue-c3 :handler="handler"></vue-c3> -->
 <div ref="resultChart" id="resultChart"/>
 </template>
 <script>
