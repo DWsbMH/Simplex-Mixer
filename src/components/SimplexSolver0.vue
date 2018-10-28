@@ -43,7 +43,6 @@ import Result from './Result.vue'
 import SliderWrapper from './SliderWrapper.vue'
 import ChartHandler from './ChartHandler.vue'
 import SimplexTable from './SimplexTable.vue'
-import vueSlider from 'vue-slider-component'
 import _ from 'lodash'
 import math from 'mathjs'
 export default {
@@ -51,8 +50,7 @@ export default {
     'sliderWrapper': SliderWrapper,
     'result': Result,
     'chartHandler': ChartHandler,
-    'simplexTable': SimplexTable,
-    vueSlider
+    'simplexTable': SimplexTable
   },
   data() {
     return {
@@ -84,17 +82,7 @@ export default {
              this.addTable(++this.iterationCounter);
              this.maxStep = undefined;
              this.changingVariable = undefined;
-             var isOptimalSolution = _.every(this.variables, function(variable) {
-               return variable.reducedCost >= 0;
-             });
-             if (isOptimalSolution) {
-               console.log("optimalFound");
-               var optimalSolution = {
-                 variables: _.cloneDeep(this.variables),
-                 result: this.result.actualResult
-               }
-               this.$emit('optimalSolutionFound', optimalSolution);
-             }
+             this.isOptimalSolution();
            }
         }
         this.variablesCopy = _.cloneDeep(this.variables);
@@ -118,6 +106,7 @@ export default {
       $this.$refs.chartHandler.init($this.result.actualResult, $this.variables);
       this.populateReducedCosts(problem);
       $this.addTable(undefined);
+      $this.isOptimalSolution();
       $this.variablesCopy = _.cloneDeep($this.variables);
     },
     addTable: function(iterationCounter) {
@@ -266,6 +255,21 @@ export default {
       if (_.includes(this.problem.artificalVariables, variable.name) || _.includes(this.problem.logicalVariables, variable.name)) {
         this.variables.splice(index, 1);
       }
+    },
+    isOptimalSolution: function () {
+      var $this = this;
+      var isOptimal = _.every($this.variables, function(variable) {
+        return $this.problem.target === 'minimize' ? variable.reducedCost >= 0 : variable.reducedCost <= 0;
+      });
+      if (isOptimal) {
+        console.log("optimalFound");
+        var optimalSolution = {
+          variables: _.cloneDeep(this.variables),
+          result: this.result.actualResult
+        }
+        this.$emit('optimalSolutionFound', optimalSolution);
+      }
+
     },
     getProcessStyle: function(variable) {
       var baseColor = {backgroundColor: '#58CD58'};

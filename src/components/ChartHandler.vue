@@ -17,7 +17,7 @@ export default {
     addResult: function (newResult, newVariables) {
       var $this = this
       this.chartData.push(newResult)
-      _.forEach(newVariables, function(variable) {
+      _.forEach(newVariables, function (variable) {
         $this.variables[variable.name] = variable.value
       })
       $this.chart.load({
@@ -26,10 +26,10 @@ export default {
         ],
         tooltip: {
             contents: function (d, defaultTitleFormat, defaultValueFormat, color) {
-                  return '<div>Show what you want</div>'
+              return '<div>Show what you want</div>'
           }
         }
-      });
+      })
     },
     init: function (initalResult, variables) {
       var $this = this
@@ -42,7 +42,7 @@ export default {
               $this.chartData
             ]
           }
-        });
+        })
       }, 100)
     }
   }
