@@ -23,4 +23,15 @@ export default {
   text-align: center;
   color: #2c3e50;
 }
+.tooltip > .tooltip-inner {
+  color: black;
+  background-color: white;
+  border: 1px solid #ccc
+}
+.tooltip.bs-tooltip-bottom .arrow:before {
+  border-bottom-color: #76cdd8 !important;
+}
+.tooltip:hover {
+  visibility: visible;
+}
 </style>

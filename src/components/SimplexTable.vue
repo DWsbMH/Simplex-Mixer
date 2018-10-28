@@ -1,7 +1,7 @@
 <template>
   <div class="tableContainer">
     <div class="card">
-      <div class="card-header">
+      <div class="card-header customFont">
         {{getPanelTitle()}}
       </div>
       <div class="card-body">
@@ -29,6 +29,9 @@
             </td>
           </tr>
       </table>
+      <div class="objectiveFunctionValue customFont">
+        Actual objective function value: {{actualObjectiveValue.toFixed(3)}}
+      </div>
       </div>
     </div>
   </div>
@@ -39,6 +42,7 @@ export default {
   name: 'SimplexTable',
   props: {
     variables: Array,
+    actualObjectiveValue: Number,
     iterationNumber: {
       type: Number
     }
@@ -72,7 +76,10 @@ export default {
 }
 .ttts, .ttts th, .ttts td {
   margin: auto;
-  margin-bottom: 50px;
+  margin-bottom: 20px;
   border: 1px solid black;
+}
+.customFont {
+  font-family: Georgia, serif;
 }
 </style>

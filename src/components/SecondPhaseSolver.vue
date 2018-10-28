@@ -1,10 +1,8 @@
 <template>
 <div>
   <div class="description">
-    <div class="container innerContainer">
-      <p>
+    <div >
         You need to find an optimal solution.
-      </p>
     </div>
   </div>
   <simplexSolver ref="simplexSolver" @optimalSolutionFound="handleSolution"></simplexSolver>
@@ -23,10 +21,10 @@
         </b-row>
       </b-container>
       <div slot="modal-footer">
-        <b-btn size="sm" class="float-left" variant="success">
-          Save
-        </b-btn>
-        <b-btn size="sm" class="float-right" variant="primary" href="/">
+          <b-btn size="sm" variant="success">
+            Save
+          </b-btn>
+        <b-btn size="sm" variant="primary" href="/">
           New problem
         </b-btn>
       </div>
@@ -37,24 +35,23 @@
 <script>
 import CustomHeader from './CustomHeader.vue'
 import SimplexSolver from './SimplexSolver0.vue'
-import _ from 'lodash'
 export default {
   components: {
     'customHeader': CustomHeader,
     'simplexSolver': SimplexSolver
   },
-  data() {
+  data () {
     return {
       optimalSolution: {}
     }
   },
   methods: {
-    handleSolution: function(optimalSolution) {
-      this.optimalSolution = optimalSolution;
-       this.$root.$emit('bv::show::modal','optimalSolutionFoundModal')
+    handleSolution: function (optimalSolution) {
+      this.optimalSolution = optimalSolution
+       this.$root.$emit('bv::show::modal', 'optimalSolutionFoundModal')
     },
-    initSecondPhase: function(problem, feasibleSolution) {
-      this.$refs.simplexSolver.initProblem(problem, feasibleSolution);
+    initSecondPhase: function (problem, feasibleSolution) {
+      this.$refs.simplexSolver.initProblem(problem, feasibleSolution)
     }
   }
 }
@@ -65,7 +62,10 @@ export default {
     background-color: #f7f7f7;
     padding-top: 15px;
     padding-bottom: 15px;
-    margin-bottom: 0px;
+    vertical-align: middle;
     font: 17px Georgia, serif;
+  }
+  #optimalSolutionFoundModal .modal-footer {
+    justify-content: space-between;
   }
 </style>

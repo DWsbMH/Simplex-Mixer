@@ -15,20 +15,20 @@ export default {
     'secondPhaseSolver': SecondPhaseSolver,
     'FirstPhaseSolver': FirstPhaseSolver
   },
-  data() {
+  data () {
     return {
       problem: undefined,
       isSecondPhaseInitialized: false
     }
   },
   methods: {
-    initProblem: function(problem) {
-      this.problem = problem;
-      this.$refs.firstPhaseSolver.getFeasibleSolution(problem);
+    initProblem: function (problem) {
+      this.problem = problem
+      this.$refs.firstPhaseSolver.getFeasibleSolution(problem)
     },
-    initSecondPhase: function(feasibleSolution) {
-      this.isSecondPhaseInitialized = true;
-      this.$refs.secondPhaseSolver.initSecondPhase(this.problem, feasibleSolution);
+    initSecondPhase: function (feasibleSolution) {
+      this.isSecondPhaseInitialized = true
+      this.$refs.secondPhaseSolver.initSecondPhase(this.problem, feasibleSolution)
     }
   }
 }

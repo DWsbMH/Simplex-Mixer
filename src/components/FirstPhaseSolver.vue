@@ -37,7 +37,7 @@ export default {
     'customHeader': CustomHeader,
     'simplexSolver': SimplexSolver
   },
-  data() {
+  data () {
     return {
       hasFeasibleSolution: false,
       showMessages: false,
@@ -54,52 +54,52 @@ export default {
         this.$root.$emit('bv::show::modal','feasibleSolutionFoundModal')
       }
     },
-    fireFeasibleSolutionFoundEvent: function() {
-      this.$refs.feasibleSolutionFoundModal.hide();
-      this.hasFeasibleSolution = true;
-      this.$emit('feasibleSolutionFound', {variables: this.optimalSolution.variables});
+    fireFeasibleSolutionFoundEvent: function () {
+      this.$refs.feasibleSolutionFoundModal.hide()
+      this.hasFeasibleSolution = true
+      this.$emit('feasibleSolutionFound', {variables: this.optimalSolution.variables})
     },
-    getFeasibleSolution: function(problem) {
+    getFeasibleSolution: function (problem) {
       var $this = this;
       if (_.isEqual(problem.logicalVariables, problem.baseVariables)) {
         var variables = $this.createInitialBase(problem, problem.logicalVariables);
-        this.$emit('feasibleSolutionFound', {variables: variables});
+        this.$emit('feasibleSolutionFound', {variables: variables})
       } else {
         this.showMessages = true;
-        var variables = $this.createInitialBase(problem, problem.baseVariables);
+        var variables = $this.createInitialBase(problem, problem.baseVariables)
         $this.modifiedProblem = _.cloneDeep(problem);
-        $this.modifiedProblem.objective = [];
-        $this.modifiedProblem.target = "minimize";
+        $this.modifiedProblem.objective = []
+        $this.modifiedProblem.target = 'minimize'
         _.forEach(problem.artificalVariables, function(artificalVariable) {
-          $this.modifiedProblem.objective[artificalVariable] = 1;
+          $this.modifiedProblem.objective[artificalVariable] = 1
         });
         this.$refs.simplexSolver.initProblem($this.modifiedProblem, {variables: variables});
       }
     },
-    createInitialBase: function(problem, variableNames) {
-      var variables = [];
+    createInitialBase: function (problem, variableNames) {
+      var variables = []
       _.forEach(variableNames, function(variable) {
-          var columnVector = [];
-          var value;
+          var columnVector = []
+          var value
           _.forEach(problem.constraints, function(constraint) {
-            columnVector.push(constraint[variable]);
+            columnVector.push(constraint[variable])
             if (constraint[variable] != 0) {
-              value = constraint["equalTo"];
+              value = constraint['equalTo']
             }
-          });
+          })
           variables.push({
             name: variable,
             columnVector: columnVector,
             isInBase: true,
             value: value,
             max: value + 2
-          });
+          })
       });
-      _.forEach(problem.variables, function(variable) {
+      _.forEach(problem.variables, function (variable) {
         if (!_.includes(variableNames, variable)) {
-          var columnVector = [];
-          _.forEach(problem.constraints, function(constraint) {
-            columnVector.push(constraint[variable]);
+          var columnVector = []
+          _.forEach(problem.constraints, function (constraint) {
+            columnVector.push(constraint[variable])
           });
           variables.push({
             name: variable,
@@ -112,9 +112,9 @@ export default {
       });
       return variables;
     },
-    removeArtificalVariables: function(solution) {
-      return _.remove(solution, function(variable, problem) {
-        return _.icludes(problem.artificalVariables, variable.name);
+    removeArtificalVariables: function (solution) {
+      return _.remove(solution, function (variable, problem) {
+        return _.icludes(problem.artificalVariables, variable.name)
       });
     }
   }

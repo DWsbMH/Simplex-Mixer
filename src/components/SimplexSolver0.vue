@@ -6,13 +6,28 @@
             <div class="variableName" :class="{baseVariable: variable.isInBase}">
               {{variable.name}}
             </div>
-            <sliderWrapper v-model="variable.value" v-bind="variable" :disabled="isDisabled(variable)"/>
-            <div>
+            <sliderWrapper v-model="variable.value" v-bind="variable"
+            :processStyle="getProcessStyle(variable)"
+            :tooltipStyle="getTooltipStyle(variable)"
+            :disabled="isDisabled(variable)"/>
+            <div :id="variable.name + 'reducedCost'">
               {{variable.reducedCost.toFixed(3)}}
             </div>
+            <b-popover
+              :target="variable.name + 'reducedCost'"
+              triggers="hover"
+              placement="bottom"
+              :container="variable.name + 'reducedCost'"
+            >
+            <template slot="title">Reduced cost</template>
+             The reduced cost indicates how improves the changing of the variable the value of the objective function.
+             <a href="https://en.wikipedia.org/wiki/Reduced_cost" target="_blank">See more.</a>
+          </b-popover>
           </div>
         </transition-group>
-        <result v-bind="result"></result>
+    </div>
+    <div class="container">
+      <result v-bind="result"></result>
     </div>
     <div class="tablesContainer">
       <div class="container tablesContainer" ref="tablesContainer"></div>
@@ -110,6 +125,7 @@ export default {
       var instance = new ComponentClass({
           propsData: {
             variables: _.cloneDeep(this.variables),
+            actualObjectiveValue: this.result.actualResult,
             iterationNumber: iterationCounter
           }
       })
@@ -250,6 +266,17 @@ export default {
       if (_.includes(this.problem.artificalVariables, variable.name) || _.includes(this.problem.logicalVariables, variable.name)) {
         this.variables.splice(index, 1);
       }
+    },
+    getProcessStyle: function(variable) {
+      var baseColor = {backgroundColor: '#58CD58'};
+      return variable.isInBase ? baseColor : undefined;
+    },
+    getTooltipStyle: function(variable) {
+      var baseColor = {
+        backgroundColor: '#58CD58',
+        borderColor: '#58CD58'
+    };
+      return variable.isInBase ? baseColor : undefined;
     }
   }
 }
@@ -257,11 +284,11 @@ export default {
 
 <style scoped>
 .variableName {
-  color: blue;
+  color: #2980b9;
   font: 17px Georgia, serif;
 }
 .baseVariable {
-  color: green;
+  color: #58CD58;
 }
 .vueSliderContainer {
   display: inline-block;

@@ -31,37 +31,37 @@
 import * as parser from '../assets/js/parser2.js'
 import example from '../assets/examples/example0.txt'
 export default {
-  data() {
+  data () {
     return {
-      problem: "",
-      error: "",
+      problem: '',
+      error: '',
       result: {}
     }
   },
   methods: {
-    uploadFile: function(event) {
-      var vm = this;
-      var file = event.target.files[0];
+    uploadFile: function (event) {
+      var vm = this
+      var file = event.target.files[0]
       if (file) {
-        var fileReader = new FileReader();
-        fileReader.onload = function(e) {
-          vm.problem = e.target.result;
+        var fileReader = new FileReader()
+        fileReader.onload = function (e) {
+          vm.problem = e.target.result
         }
-        fileReader.readAsText(file);
+        fileReader.readAsText(file)
       }
     },
-    createProblem: function() {
+    createProblem: function () {
       try {
-        this.result = parser.parse(this.problem);
-        this.result.rawProblem = this.problem;
-        this.$emit('problemReady', this.result);
+        this.result = parser.parse(this.problem)
+        this.result.rawProblem = this.problem
+        this.$emit('problemReady', this.result)
       } catch (error) {
         this.error = error.message;
       }
     }
   },
-  created() {
-    this.problem = example;
+  created () {
+    this.problem = example
   }
 }
 </script>
