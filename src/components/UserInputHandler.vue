@@ -6,7 +6,7 @@
         <div class="col col-md-10 text-center">
           <div class="row ">
             <div class="problemEditor col-md-12">
-              <textarea class="textEditor" v-model="problem"></textarea>
+              <codemirror class="codeEditor" v-model="problem" :options="codeMirrorOptions"></codemirror>
               <div class="error">
                 {{error}}
               </div>
@@ -30,12 +30,24 @@
 <script>
 import * as parser from '../assets/js/parser2.js'
 import example from '../assets/examples/example0.txt'
+import { codemirror } from 'vue-codemirror-lite'
+require('codemirror/mode/javascript/javascript')
 export default {
+  components: {
+    codemirror
+  },
   data () {
     return {
       problem: '',
       error: '',
-      result: {}
+      result: {},
+      codeMirrorOptions: {
+        language: 'javascript',
+        viewportMargin: Infinity,
+        lineNumbers: true,
+        lineWrapping: true,
+        tabSize: 2
+      }
     }
   },
   methods: {
@@ -73,6 +85,13 @@ export default {
   margin-bottom: 30px;
   margin-top: 30px;
 }
+.codeEditor {
+  text-align: left;
+  height: auto;
+}
+.codeEditor >>> .CodeMirror {
+  height: auto;
+}
 .textEditor {
   width: 100%;
   height: 400px;
@@ -80,7 +99,7 @@ export default {
   font-family: 'Consolas'
 }
 .error {
-  background-color: red;
+  background-color: #dc3545;
   color: white;
   width: 100%;
   margin: auto;
