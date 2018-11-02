@@ -92,8 +92,6 @@ export default {
   },
   methods: {
     initProblem: function(problem, feasibleSolution) {
-      var variablesInBase = [];
-      var externalVariables = [];
       var $this = this;
 
       $this.problem = problem;
@@ -252,7 +250,8 @@ export default {
           index = i;
         }
       }
-      if (_.includes(this.problem.artificalVariables, variable.name) || _.includes(this.problem.logicalVariables, variable.name)) {
+      if (_.includes(this.problem.artificalVariables, variable.name)
+      || _.includes(this.problem.logicalVariables, variable.name)) {
         this.variables.splice(index, 1);
       }
     },
@@ -265,7 +264,8 @@ export default {
         console.log("optimalFound");
         var optimalSolution = {
           variables: _.cloneDeep(this.variables),
-          result: this.result.actualResult
+          result: this.result.actualResult,
+          problem: this.problem
         }
         this.$emit('optimalSolutionFound', optimalSolution);
       }

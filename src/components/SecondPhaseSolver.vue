@@ -21,12 +21,14 @@
         </b-row>
       </b-container>
       <div slot="modal-footer">
-          <b-btn size="sm" variant="success">
-            Save
-          </b-btn>
-        <b-btn size="sm" variant="primary" href="/">
-          New problem
-        </b-btn>
+          <b-container fluid>
+            <b-row>
+              <resultSaverButton ref="resultSaver" v-bind="optimalSolution"/>
+              <b-btn size="sm" variant="primary" href="/">
+                New problem
+              </b-btn>
+            </b-row>
+          </b-container>
       </div>
     </b-modal>
   </div>
@@ -35,10 +37,12 @@
 <script>
 import CustomHeader from './CustomHeader.vue'
 import SimplexSolver from './SimplexSolver0.vue'
+import ResultSaver from './ResultSaver.vue'
 export default {
   components: {
     'customHeader': CustomHeader,
-    'simplexSolver': SimplexSolver
+    'simplexSolver': SimplexSolver,
+    'resultSaverButton': ResultSaver
   },
   data () {
     return {
