@@ -28,7 +28,7 @@
 </div>
 </template>
 <script>
-import * as parser from '../assets/js/parser2.js'
+import parser from '../assets/js/parser2.js'
 import example from '../assets/examples/example0.txt'
 import { codemirror } from 'vue-codemirror-lite'
 require('codemirror/mode/javascript/javascript')

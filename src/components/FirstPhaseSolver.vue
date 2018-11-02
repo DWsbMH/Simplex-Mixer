@@ -81,7 +81,7 @@ export default {
       _.forEach(variableNames, function(variable) {
           var columnVector = []
           var value
-          _.forEach(problem.constraints, function(constraint) {
+          _.forEach(problem.standardForm.constraints, function(constraint) {
             columnVector.push(constraint[variable])
             if (constraint[variable] != 0) {
               value = constraint['equalTo']
@@ -98,7 +98,7 @@ export default {
       _.forEach(problem.variables, function (variable) {
         if (!_.includes(variableNames, variable)) {
           var columnVector = []
-          _.forEach(problem.constraints, function (constraint) {
+          _.forEach(problem.standardForm.constraints, function (constraint) {
             columnVector.push(constraint[variable])
           });
           variables.push({

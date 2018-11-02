@@ -21,47 +21,58 @@ export default {
   },
   methods: {
     saveResult: function () {
-      console.log(this.variables, this.result, this.problem);
-      var blob = new Blob(["Hello, world!"], {type: "text/plain;charset=utf-8"});
-      //saveAs(blob, "hello world.txt");
+      var blob = new Blob([this.createResultJson()], {type: "application/json"});
+      saveAs(blob, "result.json");
     },
     createResultJson: function() {
-        return {
-          problem: {
-            constraints: getConstraints(this.problem),
-            objective: this.problem.objective,
-            target: this.problem.target
-          },
-          hasFeasibleSolution: true,
-          optimalSolution: {
-            variableValue: getOptimalSolutionVariableValues(this.variables),
-            objectiveFunctionValue: this.result
-          }
+      var result = {
+        problem: {
+          constraints: this.getConstraints(this.problem),
+          objective: this.problem.objective,
+          target: this.problem.target
+        },
+        hasFeasibleSolution: true,
+        optimalSolution: {
+          variableValue: this.getOptimalSolutionVariableValues(this.variables),
+          objectiveFunctionValue: this.result
         }
+      };
+      return JSON.stringify(result)
     },
     getConstraints: function(problem) {
       var constraints = [];
-      _.forEach(problem.constraints, function(constraint) {
-        constraints.push(getConstraint(constraint, problem.structuralVariables));
+      var $this = this;
+      _.forEach(problem.originalForm.constraints, function(constraint) {
+        constraints.push($this.getConstraint(constraint, problem.structuralVariables));
       });
       return constraints;
     },
     getConstraint: function(constraint, structuralVariables) {
+      var relation = this.getRelation(constraint);
       return {
-        leftSide: getLeftSide(constraint, structuralVariables),
-        rightSide: constraint["equalTo"],
-        relation: ""
+        leftSide: this.getLeftSide(constraint, structuralVariables),
+        rightSide: constraint[relation],
+        relation: relation
       }
     },
     getLeftSide: function(constraint, structuralVariables) {
-      var leftSide = [];
+      var leftSide = {};
       _.forEach(structuralVariables, function(variable) {
         leftSide[variable] = constraint[variable];
       });
       return leftSide;
     },
+    getRelation: function(constraint) {
+      var relation;
+      _.forEach(_.keys(constraint), function(key) {
+        if (key === "min" || key === 'max' || key === 'equalTo') {
+          relation = key;
+        }
+      });
+      return relation;
+    },
     getOptimalSolutionVariableValues: function(variables) {
-      var variableValues = [];
+      var variableValues = {};
       _.forEach(variables, function(variable) {
         variableValues[variable.name] = variable.value;
       });
