@@ -1,10 +1,43 @@
 <template>
 <div>
   <div class="description" v-show="showMessages">
-    <h1>First challange!</h1>
+    <h3>First challange!</h3>
     <p>
-      You need to a feasible solution. For this, you have to find an optimal solution for the modified problem where the sum of the artifical variables is the target function.
+      You need to a feasible solution. For this, you have to find an optimal solution for
+      the modified problem where the sum of the artifical variables is the objective function.
     </p>
+    <div v-if="modifiedProblem != undefined">
+      Modified linear programming exercise:
+        <code>
+          <table class="excerciseTable">
+            <tr v-for="(constraint, i) in modifiedProblem.standardForm.constraints" :key="'constraint' + i">
+              <td>
+                s.t.
+              </td>
+              <td v-for="(variable, i) in modifiedProblem.structuralVariables" :key="'structuralVariable' + i + variable">
+                  {{getIndexAwareSign(constraint[variable], i)}}{{getVariable(constraint[variable], variable)}}
+              </td>
+              <td v-for="(variable, i) in modifiedProblem.logicalVariables" :key="'logicalVariable' + i + variable">
+                  {{getSign(constraint[variable], i)}}{{getVariable(constraint[variable], variable)}}
+              </td>
+              <td v-for="(variable, i) in modifiedProblem.artificalVariables" :key="'artificalVariable' + i + variable">
+                  {{getSign(constraint[variable], i)}}{{getVariable(constraint[variable], variable)}}
+              </td>
+              <td>
+                =
+              </td>
+              <td>
+                {{constraint['equalTo']}}
+              </td>
+            </tr>
+          </table>
+        </br>
+        minimize target:
+        <span v-for="(variable, i) in Object.keys(modifiedProblem.objective)" :key="'objective' + variable">
+          <span v-if="i != 0">+</span> {{variable}}
+        </span>
+      </code>
+    </div>
   </div>
   <simplexSolver ref="simplexSolver" @optimalSolutionFound="handleSolution"></simplexSolver>
   <div>
@@ -68,7 +101,7 @@ export default {
         this.showMessages = true;
         var variables = $this.createInitialBase(problem, problem.baseVariables)
         $this.modifiedProblem = _.cloneDeep(problem);
-        $this.modifiedProblem.objective = []
+        $this.modifiedProblem.objective = {}
         $this.modifiedProblem.target = 'minimize'
         _.forEach(problem.artificalVariables, function(artificalVariable) {
           $this.modifiedProblem.objective[artificalVariable] = 1
@@ -116,6 +149,25 @@ export default {
       return _.remove(solution, function (variable, problem) {
         return _.icludes(problem.artificalVariables, variable.name)
       });
+    },
+    getIndexAwareSign: function(variableValue, index) {
+      return (variableValue != undefined && index != 0 && variableValue > 0) ? '+' : ''
+    },
+    getSign: function(variableValue, index) {
+      return (variableValue != undefined && variableValue > 0) ? '+' : ''
+    },
+    getVariable: function(variableValue, variableName) {
+      var variable = ''
+      if (variableName != undefined && variableName !== 'equalTo') {
+        if (variableValue > 1 || variableValue < -1) {
+          variable = variableValue + variableName
+        } else if (variableValue == 1) {
+          variable = variableName
+        } else if (variableValue == -1) {
+          variable = '-' + variableName
+        }
+      }
+      return variable
     }
   }
 }
@@ -124,5 +176,9 @@ export default {
 <style scoped>
   .description {
     background-color: #f6f6f6;
+    padding: 15px;
+  }
+  .excerciseTable {
+    margin: auto;
   }
 </style>

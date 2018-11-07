@@ -1,6 +1,10 @@
 <template>
   <div class="result">
-    <span class="resultText">Objective function value: </span> {{parseFloat(actualResult).toFixed(3)}}
+    <span id="objectiveFunctionValue" class="resultText">Objective function value: </span> {{parseFloat(actualResult).toFixed(3)}}
+    <b-popover target="objectiveFunctionValue" triggers="hover">
+       objective function.
+       <a href="https://en.wikipedia.org/wiki/Reduced_cost" target="_blank">See more.</a>
+   </b-popover>
   </div>
 </template>
 <script>
@@ -12,7 +16,6 @@ export default {
 </script>
 <style scoped>
   .result {
-    display: inline-block;
     margin-top: 20px;
     font-size: 20px;
   }

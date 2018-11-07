@@ -1,8 +1,36 @@
 <template>
 <div>
   <div class="description">
-    <div >
-        You need to find an optimal solution.
+    <div>
+        You need to find an optimal solution for the following linear programming exercise:
+        <div class="lpExcerise" v-if="problem != undefined">
+          <code>
+            <table class="excerciseTable">
+              <tr v-for="(constraint, i) in problem.standardForm.constraints" :key="'constraint' + i">
+                <td>
+                  s.t.
+                </td>
+                <td v-for="(variable, i) in problem.structuralVariables" :key="'structuralVariable' + i + variable">
+                    {{getIndexAwareSign(constraint[variable], i)}}{{getVariable(constraint[variable], variable)}}
+                </td>
+                <td v-for="(variable, i) in problem.logicalVariables" :key="'logicalVariable' + i + variable">
+                    {{getSign(constraint[variable], i)}}{{getVariable(constraint[variable], variable)}}
+                </td>
+                <td>
+                  =
+                </td>
+                <td>
+                  {{constraint['equalTo']}}
+                </td>
+              </tr>
+            </table>
+          </br>
+            {{problem.target}} target:
+              <span v-for="(variable, i) in Object.keys(problem.objective)" :key="'objective' + variable">
+                {{getIndexAwareSign(problem.objective[variable], i)}}{{problem.objective[variable]}}{{variable}}
+              </span>
+          </code>
+        </div>
     </div>
   </div>
   <simplexSolver ref="simplexSolver" @optimalSolutionFound="handleSolution"></simplexSolver>
@@ -46,7 +74,8 @@ export default {
   },
   data () {
     return {
-      optimalSolution: {}
+      optimalSolution: {},
+      problem: undefined
     }
   },
   methods: {
@@ -55,7 +84,27 @@ export default {
        this.$root.$emit('bv::show::modal', 'optimalSolutionFoundModal')
     },
     initSecondPhase: function (problem, feasibleSolution) {
+      this.problem = problem
       this.$refs.simplexSolver.initProblem(problem, feasibleSolution)
+    },
+    getIndexAwareSign: function(variableValue, index) {
+      return (variableValue != undefined && index != 0 && variableValue > 0) ? '+' : ''
+    },
+    getSign: function(variableValue, index) {
+      return (variableValue != undefined && variableValue > 0) ? '+' : ''
+    },
+    getVariable: function(variableValue, variableName) {
+      var variable = ''
+      if (variableName != undefined && variableName !== 'equalTo') {
+        if (variableValue > 1 || variableValue < -1) {
+          variable = variableValue + variableName
+        } else if (variableValue == 1) {
+          variable = variableName
+        } else if (variableValue == -1) {
+          variable = '-' + variableName
+        }
+      }
+      return variable
     }
   }
 }
@@ -71,5 +120,12 @@ export default {
   }
   #optimalSolutionFoundModal .modal-footer {
     justify-content: space-between;
+  }
+  .lpExcerise {
+    margin-top: 15px;
+    margin-bottom: 15px;
+  }
+  .excerciseTable {
+    margin: auto;
   }
 </style>

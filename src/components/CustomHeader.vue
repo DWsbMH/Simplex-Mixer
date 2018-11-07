@@ -14,7 +14,6 @@ export default {}
 <style scoped>
   .appTitle {
     font-size: 24px;
-    margin: auto;
   }
   .logo {
     width: 50px;

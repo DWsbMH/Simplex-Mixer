@@ -25,16 +25,22 @@
       </div>
     </div>
   </div>
+  <grammarSyntax></grammarSyntax>
+  <about></about>
 </div>
 </template>
 <script>
 import parser from '../assets/js/parser2.js'
 import example from '../assets/examples/example0.txt'
 import { codemirror } from 'vue-codemirror-lite'
+import grammarSyntax from './GrammarSyntax.vue'
+import about from './About.vue'
 require('codemirror/mode/javascript/javascript')
 export default {
   components: {
-    codemirror
+    codemirror,
+    grammarSyntax,
+    about
   },
   data () {
     return {
