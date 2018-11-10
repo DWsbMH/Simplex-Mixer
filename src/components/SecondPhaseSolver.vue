@@ -4,32 +4,13 @@
     <div>
         You need to find an optimal solution for the following linear programming exercise:
         <div class="lpExcerise" v-if="problem != undefined">
-          <code>
-            <table class="excerciseTable">
-              <tr v-for="(constraint, i) in problem.standardForm.constraints" :key="'constraint' + i">
-                <td>
-                  s.t.
-                </td>
-                <td v-for="(variable, i) in problem.structuralVariables" :key="'structuralVariable' + i + variable">
-                    {{getIndexAwareSign(constraint[variable], i)}}{{getVariable(constraint[variable], variable)}}
-                </td>
-                <td v-for="(variable, i) in problem.logicalVariables" :key="'logicalVariable' + i + variable">
-                    {{getSign(constraint[variable], i)}}{{getVariable(constraint[variable], variable)}}
-                </td>
-                <td>
-                  =
-                </td>
-                <td>
-                  {{constraint['equalTo']}}
-                </td>
-              </tr>
-            </table>
-          </br>
-            {{problem.target}} target:
-              <span v-for="(variable, i) in Object.keys(problem.objective)" :key="'objective' + variable">
-                {{getIndexAwareSign(problem.objective[variable], i)}}{{problem.objective[variable]}}{{variable}}
-              </span>
-          </code>
+          <linearProgrammingExercise
+            :constraints="problem.standardForm.constraints"
+            :target="problem.target"
+            :objective="problem.objective"
+            :structuralVariables="problem.structuralVariables"
+            :logicalVariables="problem.logicalVariables"
+            ></linearProgrammingExercise>
         </div>
     </div>
   </div>
@@ -66,11 +47,13 @@
 import CustomHeader from './CustomHeader.vue'
 import SimplexSolver from './SimplexSolver0.vue'
 import ResultSaver from './ResultSaver.vue'
+import LinearProgrammingExercise from './LinearProgrammingExercise.vue'
 export default {
   components: {
     'customHeader': CustomHeader,
     'simplexSolver': SimplexSolver,
-    'resultSaverButton': ResultSaver
+    'resultSaverButton': ResultSaver,
+    'linearProgrammingExercise': LinearProgrammingExercise
   },
   data () {
     return {
@@ -86,25 +69,6 @@ export default {
     initSecondPhase: function (problem, feasibleSolution) {
       this.problem = problem
       this.$refs.simplexSolver.initProblem(problem, feasibleSolution)
-    },
-    getIndexAwareSign: function(variableValue, index) {
-      return (variableValue != undefined && index != 0 && variableValue > 0) ? '+' : ''
-    },
-    getSign: function(variableValue, index) {
-      return (variableValue != undefined && variableValue > 0) ? '+' : ''
-    },
-    getVariable: function(variableValue, variableName) {
-      var variable = ''
-      if (variableName != undefined && variableName !== 'equalTo') {
-        if (variableValue > 1 || variableValue < -1) {
-          variable = variableValue + variableName
-        } else if (variableValue == 1) {
-          variable = variableName
-        } else if (variableValue == -1) {
-          variable = '-' + variableName
-        }
-      }
-      return variable
     }
   }
 }

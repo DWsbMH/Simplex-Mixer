@@ -7,36 +7,14 @@
       the modified problem where the sum of the artifical variables is the objective function.
     </p>
     <div v-if="modifiedProblem != undefined">
-      Modified linear programming exercise:
-        <code>
-          <table class="excerciseTable">
-            <tr v-for="(constraint, i) in modifiedProblem.standardForm.constraints" :key="'constraint' + i">
-              <td>
-                s.t.
-              </td>
-              <td v-for="(variable, i) in modifiedProblem.structuralVariables" :key="'structuralVariable' + i + variable">
-                  {{getIndexAwareSign(constraint[variable], i)}}{{getVariable(constraint[variable], variable)}}
-              </td>
-              <td v-for="(variable, i) in modifiedProblem.logicalVariables" :key="'logicalVariable' + i + variable">
-                  {{getSign(constraint[variable], i)}}{{getVariable(constraint[variable], variable)}}
-              </td>
-              <td v-for="(variable, i) in modifiedProblem.artificalVariables" :key="'artificalVariable' + i + variable">
-                  {{getSign(constraint[variable], i)}}{{getVariable(constraint[variable], variable)}}
-              </td>
-              <td>
-                =
-              </td>
-              <td>
-                {{constraint['equalTo']}}
-              </td>
-            </tr>
-          </table>
-        </br>
-        minimize target:
-        <span v-for="(variable, i) in Object.keys(modifiedProblem.objective)" :key="'objective' + variable">
-          <span v-if="i != 0">+</span> {{variable}}
-        </span>
-      </code>
+        <linearProgrammingExercise
+          :constraints="modifiedProblem.standardForm.constraints"
+          target="minimize"
+          :objective="modifiedProblem.objective"
+          :structuralVariables="modifiedProblem.structuralVariables"
+          :logicalVariables="modifiedProblem.logicalVariables"
+          :artificalVariables="modifiedProblem.artificalVariables"
+          ></linearProgrammingExercise>
     </div>
   </div>
   <simplexSolver ref="simplexSolver" @optimalSolutionFound="handleSolution"></simplexSolver>
@@ -64,11 +42,13 @@
 <script>
 import CustomHeader from './CustomHeader.vue'
 import SimplexSolver from './SimplexSolver0.vue'
+import LinearProgrammingExercise from './LinearProgrammingExercise.vue'
 import _ from 'lodash'
 export default {
   components: {
     'customHeader': CustomHeader,
-    'simplexSolver': SimplexSolver
+    'simplexSolver': SimplexSolver,
+    'linearProgrammingExercise': LinearProgrammingExercise
   },
   data () {
     return {
@@ -149,25 +129,6 @@ export default {
       return _.remove(solution, function (variable, problem) {
         return _.icludes(problem.artificalVariables, variable.name)
       });
-    },
-    getIndexAwareSign: function(variableValue, index) {
-      return (variableValue != undefined && index != 0 && variableValue > 0) ? '+' : ''
-    },
-    getSign: function(variableValue, index) {
-      return (variableValue != undefined && variableValue > 0) ? '+' : ''
-    },
-    getVariable: function(variableValue, variableName) {
-      var variable = ''
-      if (variableName != undefined && variableName !== 'equalTo') {
-        if (variableValue > 1 || variableValue < -1) {
-          variable = variableValue + variableName
-        } else if (variableValue == 1) {
-          variable = variableName
-        } else if (variableValue == -1) {
-          variable = '-' + variableName
-        }
-      }
-      return variable
     }
   }
 }
