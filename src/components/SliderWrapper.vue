@@ -78,7 +78,6 @@ export default {
       type: Object
     },
     boundary: {
-      default: this.max,
       type: Number
     }
   },

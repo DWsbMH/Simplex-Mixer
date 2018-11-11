@@ -3,6 +3,7 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+import store from './store'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faReceipt, faPaperPlane } from '@fortawesome/free-solid-svg-icons'
 import { faEnvelope } from '@fortawesome/free-regular-svg-icons'
@@ -15,8 +16,7 @@ Vue.component('font-awesome-icon', FontAwesomeIcon)
 
 /* eslint-disable no-new */
 new Vue({
-  el: '#app',
   router,
-  components: { App },
-  template: '<App/>'
-})
+  store,
+  render: h => h(App)
+}).$mount("#app");
