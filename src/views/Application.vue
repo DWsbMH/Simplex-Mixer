@@ -6,14 +6,14 @@
 </div>
 </template>
 <script>
-import UserInputHandler from './UserInputHandler.vue'
-import SecondPhaseSolver from './SecondPhaseSolver.vue'
-import FirstPhaseSolver from './FirstPhaseSolver.vue'
+import UserInputHandler from '@/components/UserInputHandler.vue'
+import SecondPhaseSolver from '@/components/SecondPhaseSolver.vue'
+import FirstPhaseSolver from '@/components/FirstPhaseSolver.vue'
 export default {
   components: {
-    'userInputHandler': UserInputHandler,
-    'secondPhaseSolver': SecondPhaseSolver,
-    'FirstPhaseSolver': FirstPhaseSolver
+    UserInputHandler,
+    SecondPhaseSolver,
+    FirstPhaseSolver
   },
   data () {
     return {

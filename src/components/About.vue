@@ -27,7 +27,7 @@
             </div>
             or
             <div>
-              Create an issue on GitHub: <a href="https://github.com/DWsbMH/Simplex-Mixer/issues/new">New issue</a>
+              Create an issue on GitHub: <a href="https://github.com/DWsbMH/Simplex-Mixer/issues/new" target="_blank">New issue</a>
             </div>
           </div>
         </div>

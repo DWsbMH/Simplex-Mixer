@@ -33,7 +33,7 @@
           <b-container fluid>
             <b-row>
               <resultSaverButton ref="resultSaver" v-bind="optimalSolution"/>
-              <b-btn size="sm" variant="primary" href="/">
+              <b-btn size="sm" variant="primary" href="'${baseUrl}'">
                 New problem
               </b-btn>
             </b-row>
@@ -45,12 +45,11 @@
 </template>
 <script>
 import CustomHeader from './CustomHeader.vue'
-import SimplexSolver from './SimplexSolver0.vue'
+import SimplexSolver from './SimplexSolver.vue'
 import ResultSaver from './ResultSaver.vue'
 import LinearProgrammingExercise from './LinearProgrammingExercise.vue'
 export default {
   components: {
-    'customHeader': CustomHeader,
     'simplexSolver': SimplexSolver,
     'resultSaverButton': ResultSaver,
     'linearProgrammingExercise': LinearProgrammingExercise
@@ -58,7 +57,8 @@ export default {
   data () {
     return {
       optimalSolution: {},
-      problem: undefined
+      problem: undefined,
+      baseUrl: process.env.BASE_URL
     }
   },
   methods: {

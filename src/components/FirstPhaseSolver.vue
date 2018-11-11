@@ -41,12 +41,11 @@
 </template>
 <script>
 import CustomHeader from './CustomHeader.vue'
-import SimplexSolver from './SimplexSolver0.vue'
+import SimplexSolver from './SimplexSolver.vue'
 import LinearProgrammingExercise from './LinearProgrammingExercise.vue'
 import _ from 'lodash'
 export default {
   components: {
-    'customHeader': CustomHeader,
     'simplexSolver': SimplexSolver,
     'linearProgrammingExercise': LinearProgrammingExercise
   },
