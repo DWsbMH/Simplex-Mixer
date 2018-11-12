@@ -3,7 +3,7 @@
   <div class="container">
     <div class="row">
       <div class="col-md-4">
-        Copyright &copy2018 Tamas Biczo
+        Copyright &copy;2018 Tamas Biczo
       </div>
       <div class="col-md-4">
 
@@ -17,7 +17,7 @@
 </footer>
 </template>
 <script>
-export default {}
+export default {};
 </script>
 <style scoped>
 .footer {
@@ -31,6 +31,6 @@ export default {}
 .footer a {
   text-decoration: none;
   color: #666666;
-  transition: color .15s;
+  transition: color 0.15s;
 }
 </style>

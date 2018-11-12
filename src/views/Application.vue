@@ -6,34 +6,36 @@
 </div>
 </template>
 <script>
-import UserInputHandler from '@/components/UserInputHandler.vue'
-import SecondPhaseSolver from '@/components/SecondPhaseSolver.vue'
-import FirstPhaseSolver from '@/components/FirstPhaseSolver.vue'
+import UserInputHandler from "@/components/UserInputHandler.vue";
+import SecondPhaseSolver from "@/components/SecondPhaseSolver.vue";
+import FirstPhaseSolver from "@/components/FirstPhaseSolver.vue";
 export default {
   components: {
     UserInputHandler,
     SecondPhaseSolver,
     FirstPhaseSolver
   },
-  data () {
+  data() {
     return {
       problem: undefined,
       isSecondPhaseInitialized: false
-    }
+    };
   },
   methods: {
-    initProblem: function (problem) {
-      this.problem = problem
-      this.$refs.firstPhaseSolver.getFeasibleSolution(problem)
+    initProblem: function(problem) {
+      this.problem = problem;
+      this.$refs.firstPhaseSolver.getFeasibleSolution(problem);
     },
-    initSecondPhase: function (feasibleSolution) {
-      this.isSecondPhaseInitialized = true
-      this.$refs.secondPhaseSolver.initSecondPhase(this.problem, feasibleSolution)
+    initSecondPhase: function(feasibleSolution) {
+      this.isSecondPhaseInitialized = true;
+      this.$refs.secondPhaseSolver.initSecondPhase(
+        this.problem,
+        feasibleSolution
+      );
     }
   }
-}
+};
 </script>
 
 <style scoped>
-
 </style>

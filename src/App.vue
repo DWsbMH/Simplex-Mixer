@@ -7,20 +7,20 @@
 </template>
 
 <script>
-import CustomHeader from './components/CustomHeader.vue'
-import CustomFooter from './components/CustomFooter.vue'
+import CustomHeader from "./components/CustomHeader.vue";
+import CustomFooter from "./components/CustomFooter.vue";
 export default {
   components: {
-    'customHeader': CustomHeader,
-    'CustomFooter': CustomFooter
+    customHeader: CustomHeader,
+    CustomFooter: CustomFooter
   },
-  name: 'App'
-}
+  name: "App"
+};
 </script>
 
 <style>
 #app {
-  font-family: 'Open Sans', 'Helvetica Neue', Arial, sans-serif;
+  font-family: "Open Sans", "Helvetica Neue", Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
@@ -29,7 +29,7 @@ export default {
 .tooltip > .tooltip-inner {
   color: black;
   background-color: white;
-  border: 1px solid #ccc
+  border: 1px solid #ccc;
 }
 .tooltip.bs-tooltip-bottom .arrow:before {
   border-bottom-color: #76cdd8 !important;

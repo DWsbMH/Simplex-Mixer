@@ -30,58 +30,58 @@
 </div>
 </template>
 <script>
-import parser from '../assets/js/parser2.js'
-import example from '../assets/examples/example0.txt'
-import { codemirror } from 'vue-codemirror-lite'
-import grammarSyntax from './GrammarSyntax.vue'
-import about from './About.vue'
-require('codemirror/mode/javascript/javascript')
+import parser from "../assets/js/parser2.js";
+import example from "../assets/examples/example0.txt";
+import { codemirror } from "vue-codemirror-lite";
+import grammarSyntax from "./GrammarSyntax.vue";
+import about from "./About.vue";
+require("codemirror/mode/javascript/javascript");
 export default {
   components: {
     codemirror,
     grammarSyntax,
     about
   },
-  data () {
+  data() {
     return {
-      problem: '',
-      error: '',
+      problem: "",
+      error: "",
       result: {},
       codeMirrorOptions: {
-        language: 'javascript',
+        language: "javascript",
         viewportMargin: Infinity,
         lineNumbers: true,
         lineWrapping: true,
         tabSize: 2
       }
-    }
+    };
   },
   methods: {
-    uploadFile: function (event) {
-      var vm = this
-      var file = event.target.files[0]
+    uploadFile: function(event) {
+      var vm = this;
+      var file = event.target.files[0];
       if (file) {
-        var fileReader = new FileReader()
-        fileReader.onload = function (e) {
-          vm.problem = e.target.result
-        }
-        fileReader.readAsText(file)
+        var fileReader = new FileReader();
+        fileReader.onload = function(e) {
+          vm.problem = e.target.result;
+        };
+        fileReader.readAsText(file);
       }
     },
-    createProblem: function () {
+    createProblem: function() {
       try {
-        this.result = parser.parse(this.problem)
-        this.result.rawProblem = this.problem
-        this.$emit('problemReady', this.result)
+        this.result = parser.parse(this.problem);
+        this.result.rawProblem = this.problem;
+        this.$emit("problemReady", this.result);
       } catch (error) {
         this.error = error.message;
       }
     }
   },
-  created () {
-    this.problem = example
+  created() {
+    this.problem = example;
   }
-}
+};
 </script>
 <style scoped>
 .createProblem {
@@ -102,7 +102,7 @@ export default {
   width: 100%;
   height: 400px;
   padding: 10px;
-  font-family: 'Consolas'
+  font-family: "Consolas";
 }
 .error {
   background-color: #dc3545;
@@ -115,20 +115,19 @@ export default {
   border: none;
   padding: 1rem 2rem;
   text-decoration: none;
-  background: #58CD58;
+  background: #58cd58;
   color: #ffffff;
   font-family: sans-serif;
   font-size: 1.1rem;
   cursor: pointer;
   text-align: center;
-  transition: background 250ms ease-in-out,
-  transform 150ms ease;
+  transition: background 250ms ease-in-out, transform 150ms ease;
   -webkit-appearance: none;
   -moz-appearance: none;
 }
 .createProblemButton:hover,
 .createProblemButton:focus {
-  background: #7FD97F;
+  background: #7fd97f;
 }
 .createProblemButton:focus {
   outline: 1px solid #fff;

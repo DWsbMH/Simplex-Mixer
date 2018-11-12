@@ -33,7 +33,7 @@
           <b-container fluid>
             <b-row>
               <resultSaverButton ref="resultSaver" v-bind="optimalSolution"/>
-              <b-btn size="sm" variant="primary" href="'${baseUrl}'">
+              <b-btn size="sm" variant="primary" :href="baseUrl">
                 New problem
               </b-btn>
             </b-row>
@@ -44,52 +44,51 @@
 </div>
 </template>
 <script>
-import CustomHeader from './CustomHeader.vue'
-import SimplexSolver from './SimplexSolver.vue'
-import ResultSaver from './ResultSaver.vue'
-import LinearProgrammingExercise from './LinearProgrammingExercise.vue'
+import SimplexSolver from "./SimplexSolver.vue";
+import ResultSaver from "./ResultSaver.vue";
+import LinearProgrammingExercise from "./LinearProgrammingExercise.vue";
 export default {
   components: {
-    'simplexSolver': SimplexSolver,
-    'resultSaverButton': ResultSaver,
-    'linearProgrammingExercise': LinearProgrammingExercise
+    simplexSolver: SimplexSolver,
+    resultSaverButton: ResultSaver,
+    linearProgrammingExercise: LinearProgrammingExercise
   },
-  data () {
+  data() {
     return {
       optimalSolution: {},
       problem: undefined,
       baseUrl: process.env.BASE_URL
-    }
+    };
   },
   methods: {
-    handleSolution: function (optimalSolution) {
-      this.optimalSolution = optimalSolution
-       this.$root.$emit('bv::show::modal', 'optimalSolutionFoundModal')
+    handleSolution: function(optimalSolution) {
+      this.optimalSolution = optimalSolution;
+      this.$root.$emit("bv::show::modal", "optimalSolutionFoundModal");
     },
-    initSecondPhase: function (problem, feasibleSolution) {
-      this.problem = problem
-      this.$refs.simplexSolver.initProblem(problem, feasibleSolution)
+    initSecondPhase: function(problem, feasibleSolution) {
+      this.problem = problem;
+      this.$refs.simplexSolver.initProblem(problem, feasibleSolution);
     }
   }
-}
+};
 </script>
 
 <style scoped>
-  .description {
-    background-color: #f7f7f7;
-    padding-top: 15px;
-    padding-bottom: 15px;
-    vertical-align: middle;
-    font: 17px Georgia, serif;
-  }
-  #optimalSolutionFoundModal .modal-footer {
-    justify-content: space-between;
-  }
-  .lpExcerise {
-    margin-top: 15px;
-    margin-bottom: 15px;
-  }
-  .excerciseTable {
-    margin: auto;
-  }
+.description {
+  background-color: #f7f7f7;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  vertical-align: middle;
+  font: 17px Georgia, serif;
+}
+#optimalSolutionFoundModal .modal-footer {
+  justify-content: space-between;
+}
+.lpExcerise {
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+.excerciseTable {
+  margin: auto;
+}
 </style>

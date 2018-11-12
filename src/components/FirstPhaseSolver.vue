@@ -40,78 +40,82 @@
 </div>
 </template>
 <script>
-import CustomHeader from './CustomHeader.vue'
-import SimplexSolver from './SimplexSolver.vue'
-import LinearProgrammingExercise from './LinearProgrammingExercise.vue'
-import _ from 'lodash'
+import SimplexSolver from "./SimplexSolver.vue";
+import LinearProgrammingExercise from "./LinearProgrammingExercise.vue";
+import _ from "lodash";
 export default {
   components: {
-    'simplexSolver': SimplexSolver,
-    'linearProgrammingExercise': LinearProgrammingExercise
+    simplexSolver: SimplexSolver,
+    linearProgrammingExercise: LinearProgrammingExercise
   },
-  data () {
+  data() {
     return {
       hasFeasibleSolution: false,
       showMessages: false,
       modifiedProblem: undefined,
       optimalSolution: undefined
-    }
+    };
   },
   methods: {
     handleSolution: function(optimalSolution) {
       if (parseFloat(optimalSolution.result).toFixed(5) > 0) {
-         this.$root.$emit('bv::show::modal','noFeasibleSolutionModal')
+        this.$root.$emit("bv::show::modal", "noFeasibleSolutionModal");
       } else {
         this.optimalSolution = optimalSolution;
-        this.$root.$emit('bv::show::modal','feasibleSolutionFoundModal')
+        this.$root.$emit("bv::show::modal", "feasibleSolutionFoundModal");
       }
     },
-    fireFeasibleSolutionFoundEvent: function () {
-      this.$refs.feasibleSolutionFoundModal.hide()
-      this.hasFeasibleSolution = true
-      this.$emit('feasibleSolutionFound', {variables: this.optimalSolution.variables})
+    fireFeasibleSolutionFoundEvent: function() {
+      this.$refs.feasibleSolutionFoundModal.hide();
+      this.hasFeasibleSolution = true;
+      this.$emit("feasibleSolutionFound", {
+        variables: this.optimalSolution.variables
+      });
     },
-    getFeasibleSolution: function (problem) {
+    getFeasibleSolution: function(problem) {
       var $this = this;
+      var variables;
       if (_.isEqual(problem.logicalVariables, problem.baseVariables)) {
-        var variables = $this.createInitialBase(problem, problem.logicalVariables);
-        this.$emit('feasibleSolutionFound', {variables: variables})
+        variables = $this.createInitialBase(problem, problem.logicalVariables);
+        this.$emit("feasibleSolutionFound", { variables: variables });
       } else {
         this.showMessages = true;
-        var variables = $this.createInitialBase(problem, problem.baseVariables)
+        variables = $this.createInitialBase(problem, problem.baseVariables);
         $this.modifiedProblem = _.cloneDeep(problem);
-        $this.modifiedProblem.objective = {}
-        $this.modifiedProblem.target = 'minimize'
+        $this.modifiedProblem.objective = {};
+        $this.modifiedProblem.target = "minimize";
         _.forEach(problem.artificalVariables, function(artificalVariable) {
-          $this.modifiedProblem.objective[artificalVariable] = 1
+          $this.modifiedProblem.objective[artificalVariable] = 1;
         });
-        this.$refs.simplexSolver.initProblem($this.modifiedProblem, {variables: variables});
+        this.$refs.simplexSolver.initProblem($this.modifiedProblem, {
+          variables: variables
+        });
       }
     },
-    createInitialBase: function (problem, variableNames) {
-      var variables = []
+    createInitialBase: function(problem, variableNames) {
+      var variables = [];
       _.forEach(variableNames, function(variable) {
-          var columnVector = []
-          var value
-          _.forEach(problem.standardForm.constraints, function(constraint) {
-            columnVector.push(constraint[variable])
-            if (constraint[variable] != 0) {
-              value = constraint['equalTo']
-            }
-          })
-          variables.push({
-            name: variable,
-            columnVector: columnVector,
-            isInBase: true,
-            value: value,
-            max: value + 2
-          })
+        var columnVector = [];
+        var value;
+        _.forEach(problem.standardForm.constraints, function(constraint) {
+          columnVector.push(constraint[variable]);
+          if (constraint[variable] != 0) {
+            value = constraint["equalTo"];
+          }
+        });
+        variables.push({
+          name: variable,
+          columnVector: columnVector,
+          isInBase: true,
+          value: value,
+          max: value + 2
+        });
       });
-      _.forEach(problem.variables, function (variable) {
+      _.forEach(problem.variables, function(variable) {
         if (!_.includes(variableNames, variable)) {
-          var columnVector = []
-          _.forEach(problem.standardForm.constraints, function (constraint) {
-            columnVector.push(constraint[variable])
+          var columnVector = [];
+          _.forEach(problem.standardForm.constraints, function(constraint) {
+            columnVector.push(constraint[variable]);
           });
           variables.push({
             name: variable,
@@ -124,21 +128,21 @@ export default {
       });
       return variables;
     },
-    removeArtificalVariables: function (solution) {
-      return _.remove(solution, function (variable, problem) {
-        return _.icludes(problem.artificalVariables, variable.name)
+    removeArtificalVariables: function(solution) {
+      return _.remove(solution, function(variable, problem) {
+        return _.icludes(problem.artificalVariables, variable.name);
       });
     }
   }
-}
+};
 </script>
 
 <style scoped>
-  .description {
-    background-color: #f6f6f6;
-    padding: 15px;
-  }
-  .excerciseTable {
-    margin: auto;
-  }
+.description {
+  background-color: #f6f6f6;
+  padding: 15px;
+}
+.excerciseTable {
+  margin: auto;
+}
 </style>

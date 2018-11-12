@@ -23,7 +23,7 @@
             </td>
           </tr>
         </table>
-      </br>
+      <br/>
       {{target}} target:
       <span v-for="(variable, i) in Object.keys(objective)" :key="'objective' + variable">
         {{getIndexAwareSign(objective[variable], i)}}&nbsp;{{getVariable(objective[variable], variable)}}
@@ -52,31 +52,33 @@ export default {
   },
   methods: {
     getIndexAwareSign: function(variableValue, index) {
-      return (variableValue != undefined && index != 0 && variableValue > 0) ? '+' : ''
+      return variableValue != undefined && index != 0 && variableValue > 0
+        ? "+"
+        : "";
     },
     getSign: function(variableValue) {
-      return (variableValue != undefined && variableValue > 0) ? '+' : ''
+      return variableValue != undefined && variableValue > 0 ? "+" : "";
     },
     getVariable: function(variableValue, variableName) {
-      var variable = ''
-      if (variableName != undefined && variableName !== 'equalTo') {
+      var variable = "";
+      if (variableName != undefined && variableName !== "equalTo") {
         if (variableValue > 1) {
-          variable = variableValue + variableName
+          variable = variableValue + variableName;
         } else if (variableValue < -1) {
-          variable = '- ' + Math.abs(variableValue) + variableName
+          variable = "- " + Math.abs(variableValue) + variableName;
         } else if (variableValue == 1) {
-          variable = variableName
+          variable = variableName;
         } else if (variableValue == -1) {
-          variable = '- ' + variableName
+          variable = "- " + variableName;
         }
       }
-      return variable
+      return variable;
     }
   }
-}
+};
 </script>
 <style scoped>
-  .excerciseTable {
-    margin: auto;
-  }
+.excerciseTable {
+  margin: auto;
+}
 </style>

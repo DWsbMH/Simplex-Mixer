@@ -9,14 +9,14 @@
   </div>
 </template>
 <script>
-export default {}
+export default {};
 </script>
 <style scoped>
-  .appTitle {
-    font-size: 24px;
-  }
-  .logo {
-    width: 50px;
-    height: 66px;
-  }
+.appTitle {
+  font-size: 24px;
+}
+.logo {
+  width: 50px;
+  height: 66px;
+}
 </style>

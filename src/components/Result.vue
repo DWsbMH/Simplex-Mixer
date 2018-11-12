@@ -12,14 +12,14 @@ export default {
   props: {
     actualResult: Number
   }
-}
+};
 </script>
 <style scoped>
-  .result {
-    margin-top: 20px;
-    font-size: 20px;
-  }
-  .resultText {
-    font: 25px Georgia, serif;
-  }
+.result {
+  margin-top: 20px;
+  font-size: 20px;
+}
+.resultText {
+  font: 25px Georgia, serif;
+}
 </style>

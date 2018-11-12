@@ -6,13 +6,11 @@
 </div>
 </template>
 <script>
-import _ from 'lodash'
-import saveAs from 'file-saver';
+import _ from "lodash";
+import saveAs from "file-saver";
 export default {
-  data () {
-    return {
-
-    }
+  data() {
+    return {};
   },
   props: {
     variables: Array,
@@ -20,8 +18,10 @@ export default {
     problem: Object
   },
   methods: {
-    saveResult: function () {
-      var blob = new Blob([this.createResultJson()], {type: "application/json"});
+    saveResult: function() {
+      var blob = new Blob([this.createResultJson()], {
+        type: "application/json"
+      });
       saveAs(blob, "result.json");
     },
     createResultJson: function() {
@@ -37,13 +37,15 @@ export default {
           objectiveFunctionValue: this.result
         }
       };
-      return JSON.stringify(result)
+      return JSON.stringify(result);
     },
     getConstraints: function(problem) {
       var constraints = [];
       var $this = this;
       _.forEach(problem.originalForm.constraints, function(constraint) {
-        constraints.push($this.getConstraint(constraint, problem.structuralVariables));
+        constraints.push(
+          $this.getConstraint(constraint, problem.structuralVariables)
+        );
       });
       return constraints;
     },
@@ -53,7 +55,7 @@ export default {
         leftSide: this.getLeftSide(constraint, structuralVariables),
         rightSide: constraint[relation],
         relation: relation
-      }
+      };
     },
     getLeftSide: function(constraint, structuralVariables) {
       var leftSide = {};
@@ -65,7 +67,7 @@ export default {
     getRelation: function(constraint) {
       var relation;
       _.forEach(_.keys(constraint), function(key) {
-        if (key === "min" || key === 'max' || key === 'equalTo') {
+        if (key === "min" || key === "max" || key === "equalTo") {
           relation = key;
         }
       });
@@ -79,11 +81,11 @@ export default {
       return variableValues;
     }
   }
-}
+};
 </script>
 
 <style scoped>
-  .saveButton {
-    margin-right: 5px;
-  }
+.saveButton {
+  margin-right: 5px;
+}
 </style>

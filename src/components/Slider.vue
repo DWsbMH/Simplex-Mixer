@@ -39,23 +39,23 @@ export default {
     }
   },
   model: {
-    prop: 'value',
-    event: 'input'
+    prop: "value",
+    event: "input"
   },
   methods: {
     change: function(event) {
       var newValue;
-      if(this.boundary && event.target.value > this.boundary) {
+      if (this.boundary && event.target.value > this.boundary) {
         newValue = this.boundary;
         event.target.value = this.boundary;
         event.preventDefault();
       } else {
         newValue = event.target.value;
       }
-      this.$emit('input', newValue);
+      this.$emit("input", newValue);
     }
   }
-}
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
@@ -81,8 +81,8 @@ export default {
   display: inline-block;
   opacity: 0.7;
   background: #d3d3d3;
-  -webkit-transition: .2s;
-  transition: opacity .2s;
+  -webkit-transition: 0.2s;
+  transition: opacity 0.2s;
   border-radius: 5px;
   /*transform: rotate(270deg);*/
 }
@@ -92,13 +92,12 @@ export default {
 }
 
 .slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 20px;
-    height: 20px;
-    background: #4CAF50;
-    cursor: pointer;
-    border-radius: 50%;
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: #4caf50;
+  cursor: pointer;
+  border-radius: 50%;
 }
-
 </style>

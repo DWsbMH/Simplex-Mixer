@@ -12,7 +12,7 @@
               {{variable.name}}
             </th>
           </tr>
-          <tr v-for="i in getBaseSize()">
+          <tr v-for="i in getBaseSize()" :key="'rowNr' + i">
             <td>
               {{variables[i-1].name}}
             </td>
@@ -37,9 +37,9 @@
   </div>
 </template>
 <script>
-import _ from 'lodash'
+import _ from "lodash";
 export default {
-  name: 'SimplexTable',
+  name: "SimplexTable",
   props: {
     variables: Array,
     actualObjectiveValue: Number,
@@ -49,7 +49,9 @@ export default {
   },
   methods: {
     getPanelTitle: function() {
-      return this.iterationNumber != undefined ? this.iterationNumber + ". iteration" : "Initial state";
+      return this.iterationNumber != undefined
+        ? this.iterationNumber + ". iteration"
+        : "Initial state";
     },
     getBaseSize: function() {
       var $this = this;
@@ -59,7 +61,7 @@ export default {
       return baseSize;
     }
   }
-}
+};
 </script>
 <style scoped>
 .tableContainer {
@@ -71,10 +73,13 @@ export default {
 .ttts {
   border-collapse: collapse;
 }
-.ttts td, .ttts th {
+.ttts td,
+.ttts th {
   padding: 5px;
 }
-.ttts, .ttts th, .ttts td {
+.ttts,
+.ttts th,
+.ttts td {
   margin: auto;
   margin-bottom: 20px;
   border: 1px solid black;

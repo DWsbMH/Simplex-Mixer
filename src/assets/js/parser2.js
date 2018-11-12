@@ -7,17 +7,19 @@ export default /*
   "use strict";
 
   function peg$subclass(child, parent) {
-    function ctor() { this.constructor = child; }
+    function ctor() {
+      this.constructor = child;
+    }
     ctor.prototype = parent.prototype;
     child.prototype = new ctor();
   }
 
   function peg$SyntaxError(message, expected, found, location) {
-    this.message  = message;
+    this.message = message;
     this.expected = expected;
-    this.found    = found;
+    this.found = found;
     this.location = location;
-    this.name     = "SyntaxError";
+    this.name = "SyntaxError";
 
     if (typeof Error.captureStackTrace === "function") {
       Error.captureStackTrace(this, peg$SyntaxError);
@@ -28,64 +30,78 @@ export default /*
 
   peg$SyntaxError.buildMessage = function(expected, found) {
     var DESCRIBE_EXPECTATION_FNS = {
-          literal: function(expectation) {
-            return "\"" + literalEscape(expectation.text) + "\"";
-          },
+      literal: function(expectation) {
+        return '"' + literalEscape(expectation.text) + '"';
+      },
 
-          "class": function(expectation) {
-            var escapedParts = "",
-                i;
+      class: function(expectation) {
+        var escapedParts = "",
+          i;
 
-            for (i = 0; i < expectation.parts.length; i++) {
-              escapedParts += expectation.parts[i] instanceof Array
-                ? classEscape(expectation.parts[i][0]) + "-" + classEscape(expectation.parts[i][1])
-                : classEscape(expectation.parts[i]);
-            }
+        for (i = 0; i < expectation.parts.length; i++) {
+          escapedParts +=
+            expectation.parts[i] instanceof Array
+              ? classEscape(expectation.parts[i][0]) +
+                "-" +
+                classEscape(expectation.parts[i][1])
+              : classEscape(expectation.parts[i]);
+        }
 
-            return "[" + (expectation.inverted ? "^" : "") + escapedParts + "]";
-          },
+        return "[" + (expectation.inverted ? "^" : "") + escapedParts + "]";
+      },
 
-          any: function(expectation) {
-            return "any character";
-          },
+      any: function(expectation) {
+        return "any character";
+      },
 
-          end: function(expectation) {
-            return "end of input";
-          },
+      end: function(expectation) {
+        return "end of input";
+      },
 
-          other: function(expectation) {
-            return expectation.description;
-          }
-        };
+      other: function(expectation) {
+        return expectation.description;
+      }
+    };
 
     function hex(ch) {
-      return ch.charCodeAt(0).toString(16).toUpperCase();
+      return ch
+        .charCodeAt(0)
+        .toString(16)
+        .toUpperCase();
     }
 
     function literalEscape(s) {
       return s
-        .replace(/\\/g, '\\\\')
-        .replace(/"/g,  '\\"')
-        .replace(/\0/g, '\\0')
-        .replace(/\t/g, '\\t')
-        .replace(/\n/g, '\\n')
-        .replace(/\r/g, '\\r')
-        .replace(/[\x00-\x0F]/g,          function(ch) { return '\\x0' + hex(ch); })
-        .replace(/[\x10-\x1F\x7F-\x9F]/g, function(ch) { return '\\x'  + hex(ch); });
+        .replace(/\\/g, "\\\\")
+        .replace(/"/g, '\\"')
+        .replace(/\0/g, "\\0")
+        .replace(/\t/g, "\\t")
+        .replace(/\n/g, "\\n")
+        .replace(/\r/g, "\\r")
+        .replace(/[\x00-\x0F]/g, function(ch) {
+          return "\\x0" + hex(ch);
+        })
+        .replace(/[\x10-\x1F\x7F-\x9F]/g, function(ch) {
+          return "\\x" + hex(ch);
+        });
     }
 
     function classEscape(s) {
       return s
-        .replace(/\\/g, '\\\\')
-        .replace(/\]/g, '\\]')
-        .replace(/\^/g, '\\^')
-        .replace(/-/g,  '\\-')
-        .replace(/\0/g, '\\0')
-        .replace(/\t/g, '\\t')
-        .replace(/\n/g, '\\n')
-        .replace(/\r/g, '\\r')
-        .replace(/[\x00-\x0F]/g,          function(ch) { return '\\x0' + hex(ch); })
-        .replace(/[\x10-\x1F\x7F-\x9F]/g, function(ch) { return '\\x'  + hex(ch); });
+        .replace(/\\/g, "\\\\")
+        .replace(/\]/g, "\\]")
+        .replace(/\^/g, "\\^")
+        .replace(/-/g, "\\-")
+        .replace(/\0/g, "\\0")
+        .replace(/\t/g, "\\t")
+        .replace(/\n/g, "\\n")
+        .replace(/\r/g, "\\r")
+        .replace(/[\x00-\x0F]/g, function(ch) {
+          return "\\x0" + hex(ch);
+        })
+        .replace(/[\x10-\x1F\x7F-\x9F]/g, function(ch) {
+          return "\\x" + hex(ch);
+        });
     }
 
     function describeExpectation(expectation) {
@@ -94,7 +110,8 @@ export default /*
 
     function describeExpected(expected) {
       var descriptions = new Array(expected.length),
-          i, j;
+        i,
+        j;
 
       for (i = 0; i < expected.length; i++) {
         descriptions[i] = describeExpectation(expected[i]);
@@ -120,79 +137,110 @@ export default /*
           return descriptions[0] + " or " + descriptions[1];
 
         default:
-          return descriptions.slice(0, -1).join(", ")
-            + ", or "
-            + descriptions[descriptions.length - 1];
+          return (
+            descriptions.slice(0, -1).join(", ") +
+            ", or " +
+            descriptions[descriptions.length - 1]
+          );
       }
     }
 
     function describeFound(found) {
-      return found ? "\"" + literalEscape(found) + "\"" : "end of input";
+      return found ? '"' + literalEscape(found) + '"' : "end of input";
     }
 
-    return "Expected " + describeExpected(expected) + " but " + describeFound(found) + " found.";
+    return (
+      "Expected " +
+      describeExpected(expected) +
+      " but " +
+      describeFound(found) +
+      " found."
+    );
   };
 
   function peg$parse(input, options) {
     options = options !== void 0 ? options : {};
 
     var peg$FAILED = {},
-
-        peg$startRuleFunctions = { start: peg$parsestart },
-        peg$startRuleFunction  = peg$parsestart,
-
-        peg$c0 = function() {return getResult();},
-        peg$c1 = /^[a-zA-Z]/,
-        peg$c2 = peg$classExpectation([["a", "z"], ["A", "Z"]], false, false),
-        peg$c3 = /^[0-9]/,
-        peg$c4 = peg$classExpectation([["0", "9"]], false, false),
-        peg$c5 = function(token) { return token.join(''); },
-        peg$c6 = function(token) { return parseInt(token.join('')); },
-        peg$c7 = "<=",
-        peg$c8 = peg$literalExpectation("<=", false),
-        peg$c9 = ">=",
-        peg$c10 = peg$literalExpectation(">=", false),
-        peg$c11 = "=",
-        peg$c12 = peg$literalExpectation("=", false),
-        peg$c13 = "minimize",
-        peg$c14 = peg$literalExpectation("minimize", false),
-        peg$c15 = "maximize",
-        peg$c16 = peg$literalExpectation("maximize", false),
-        peg$c17 = function(targetDef) {target = targetDef},
-        peg$c18 = /^[ \t\n\r]/,
-        peg$c19 = peg$classExpectation([" ", "\t", "\n", "\r"], false, false),
-        peg$c20 = "var",
-        peg$c21 = peg$literalExpectation("var", false),
-        peg$c22 = ";",
-        peg$c23 = peg$literalExpectation(";", false),
-        peg$c24 = function(variableName) {addVariableName(variableName);},
-        peg$c25 = "s.t.",
-        peg$c26 = peg$literalExpectation("s.t.", false),
-        peg$c27 = ":",
-        peg$c28 = peg$literalExpectation(":", false),
-        peg$c29 = function(constraintName, relation) {addConstraint(relation);},
-        peg$c30 = function(objectiveName) {objective = tempMap},
-        peg$c31 = /^[+\-]/,
-        peg$c32 = peg$classExpectation(["+", "-"], false, false),
-        peg$c33 = "*",
-        peg$c34 = peg$literalExpectation("*", false),
-        peg$c35 = function(operator, coefficient, variableName) {addVariable(operator !== "-" ? coefficient : coefficient * (-1), variableName);},
-        peg$c36 = function(coefficient, variableName) {addVariable(coefficient, variableName);},
-        peg$c37 = function(operator, variableName) {addVariable(operator == "-" ? -1 : 1, variableName);},
-        peg$c38 = function(constraint) {tempConstraint = constraint},
-
-        peg$currPos          = 0,
-        peg$savedPos         = 0,
-        peg$posDetailsCache  = [{ line: 1, column: 1 }],
-        peg$maxFailPos       = 0,
-        peg$maxFailExpected  = [],
-        peg$silentFails      = 0,
-
-        peg$result;
+      peg$startRuleFunctions = { start: peg$parsestart },
+      peg$startRuleFunction = peg$parsestart,
+      peg$c0 = function() {
+        return getResult();
+      },
+      peg$c1 = /^[a-zA-Z]/,
+      peg$c2 = peg$classExpectation([["a", "z"], ["A", "Z"]], false, false),
+      peg$c3 = /^[0-9]/,
+      peg$c4 = peg$classExpectation([["0", "9"]], false, false),
+      peg$c5 = function(token) {
+        return token.join("");
+      },
+      peg$c6 = function(token) {
+        return parseInt(token.join(""));
+      },
+      peg$c7 = "<=",
+      peg$c8 = peg$literalExpectation("<=", false),
+      peg$c9 = ">=",
+      peg$c10 = peg$literalExpectation(">=", false),
+      peg$c11 = "=",
+      peg$c12 = peg$literalExpectation("=", false),
+      peg$c13 = "minimize",
+      peg$c14 = peg$literalExpectation("minimize", false),
+      peg$c15 = "maximize",
+      peg$c16 = peg$literalExpectation("maximize", false),
+      peg$c17 = function(targetDef) {
+        target = targetDef;
+      },
+      peg$c18 = /^[ \t\n\r]/,
+      peg$c19 = peg$classExpectation([" ", "\t", "\n", "\r"], false, false),
+      peg$c20 = "var",
+      peg$c21 = peg$literalExpectation("var", false),
+      peg$c22 = ";",
+      peg$c23 = peg$literalExpectation(";", false),
+      peg$c24 = function(variableName) {
+        addVariableName(variableName);
+      },
+      peg$c25 = "s.t.",
+      peg$c26 = peg$literalExpectation("s.t.", false),
+      peg$c27 = ":",
+      peg$c28 = peg$literalExpectation(":", false),
+      peg$c29 = function(constraintName, relation) {
+        addConstraint(relation);
+      },
+      peg$c30 = function(objectiveName) {
+        objective = tempMap;
+      },
+      peg$c31 = /^[+\-]/,
+      peg$c32 = peg$classExpectation(["+", "-"], false, false),
+      peg$c33 = "*",
+      peg$c34 = peg$literalExpectation("*", false),
+      peg$c35 = function(operator, coefficient, variableName) {
+        addVariable(
+          operator !== "-" ? coefficient : coefficient * -1,
+          variableName
+        );
+      },
+      peg$c36 = function(coefficient, variableName) {
+        addVariable(coefficient, variableName);
+      },
+      peg$c37 = function(operator, variableName) {
+        addVariable(operator == "-" ? -1 : 1, variableName);
+      },
+      peg$c38 = function(constraint) {
+        tempConstraint = constraint;
+      },
+      peg$currPos = 0,
+      peg$savedPos = 0,
+      peg$posDetailsCache = [{ line: 1, column: 1 }],
+      peg$maxFailPos = 0,
+      peg$maxFailExpected = [],
+      peg$silentFails = 0,
+      peg$result;
 
     if ("startRule" in options) {
       if (!(options.startRule in peg$startRuleFunctions)) {
-        throw new Error("Can't start parsing from rule \"" + options.startRule + "\".");
+        throw new Error(
+          "Can't start parsing from rule \"" + options.startRule + '".'
+        );
       }
 
       peg$startRuleFunction = peg$startRuleFunctions[options.startRule];
@@ -207,7 +255,10 @@ export default /*
     }
 
     function expected(description, location) {
-      location = location !== void 0 ? location : peg$computeLocation(peg$savedPos, peg$currPos)
+      location =
+        location !== void 0
+          ? location
+          : peg$computeLocation(peg$savedPos, peg$currPos);
 
       throw peg$buildStructuredError(
         [peg$otherExpectation(description)],
@@ -217,7 +268,10 @@ export default /*
     }
 
     function error(message, location) {
-      location = location !== void 0 ? location : peg$computeLocation(peg$savedPos, peg$currPos)
+      location =
+        location !== void 0
+          ? location
+          : peg$computeLocation(peg$savedPos, peg$currPos);
 
       throw peg$buildSimpleError(message, location);
     }
@@ -227,7 +281,12 @@ export default /*
     }
 
     function peg$classExpectation(parts, inverted, ignoreCase) {
-      return { type: "class", parts: parts, inverted: inverted, ignoreCase: ignoreCase };
+      return {
+        type: "class",
+        parts: parts,
+        inverted: inverted,
+        ignoreCase: ignoreCase
+      };
     }
 
     function peg$anyExpectation() {
@@ -243,7 +302,8 @@ export default /*
     }
 
     function peg$computePosDetails(pos) {
-      var details = peg$posDetailsCache[pos], p;
+      var details = peg$posDetailsCache[pos],
+        p;
 
       if (details) {
         return details;
@@ -255,7 +315,7 @@ export default /*
 
         details = peg$posDetailsCache[p];
         details = {
-          line:   details.line,
+          line: details.line,
           column: details.column
         };
 
@@ -277,24 +337,26 @@ export default /*
 
     function peg$computeLocation(startPos, endPos) {
       var startPosDetails = peg$computePosDetails(startPos),
-          endPosDetails   = peg$computePosDetails(endPos);
+        endPosDetails = peg$computePosDetails(endPos);
 
       return {
         start: {
           offset: startPos,
-          line:   startPosDetails.line,
+          line: startPosDetails.line,
           column: startPosDetails.column
         },
         end: {
           offset: endPos,
-          line:   endPosDetails.line,
+          line: endPosDetails.line,
           column: endPosDetails.column
         }
       };
     }
 
     function peg$fail(expected) {
-      if (peg$currPos < peg$maxFailPos) { return; }
+      if (peg$currPos < peg$maxFailPos) {
+        return;
+      }
 
       if (peg$currPos > peg$maxFailPos) {
         peg$maxFailPos = peg$currPos;
@@ -342,7 +404,9 @@ export default /*
         peg$currPos++;
       } else {
         s3 = peg$FAILED;
-        if (peg$silentFails === 0) { peg$fail(peg$c2); }
+        if (peg$silentFails === 0) {
+          peg$fail(peg$c2);
+        }
       }
       if (s3 !== peg$FAILED) {
         while (s3 !== peg$FAILED) {
@@ -352,7 +416,9 @@ export default /*
             peg$currPos++;
           } else {
             s3 = peg$FAILED;
-            if (peg$silentFails === 0) { peg$fail(peg$c2); }
+            if (peg$silentFails === 0) {
+              peg$fail(peg$c2);
+            }
           }
         }
       } else {
@@ -365,7 +431,9 @@ export default /*
           peg$currPos++;
         } else {
           s4 = peg$FAILED;
-          if (peg$silentFails === 0) { peg$fail(peg$c4); }
+          if (peg$silentFails === 0) {
+            peg$fail(peg$c4);
+          }
         }
         while (s4 !== peg$FAILED) {
           s3.push(s4);
@@ -374,7 +442,9 @@ export default /*
             peg$currPos++;
           } else {
             s4 = peg$FAILED;
-            if (peg$silentFails === 0) { peg$fail(peg$c4); }
+            if (peg$silentFails === 0) {
+              peg$fail(peg$c4);
+            }
           }
         }
         if (s3 !== peg$FAILED) {
@@ -407,7 +477,9 @@ export default /*
         peg$currPos++;
       } else {
         s2 = peg$FAILED;
-        if (peg$silentFails === 0) { peg$fail(peg$c4); }
+        if (peg$silentFails === 0) {
+          peg$fail(peg$c4);
+        }
       }
       if (s2 !== peg$FAILED) {
         while (s2 !== peg$FAILED) {
@@ -417,7 +489,9 @@ export default /*
             peg$currPos++;
           } else {
             s2 = peg$FAILED;
-            if (peg$silentFails === 0) { peg$fail(peg$c4); }
+            if (peg$silentFails === 0) {
+              peg$fail(peg$c4);
+            }
           }
         }
       } else {
@@ -440,7 +514,9 @@ export default /*
         peg$currPos += 2;
       } else {
         s0 = peg$FAILED;
-        if (peg$silentFails === 0) { peg$fail(peg$c8); }
+        if (peg$silentFails === 0) {
+          peg$fail(peg$c8);
+        }
       }
       if (s0 === peg$FAILED) {
         if (input.substr(peg$currPos, 2) === peg$c9) {
@@ -448,7 +524,9 @@ export default /*
           peg$currPos += 2;
         } else {
           s0 = peg$FAILED;
-          if (peg$silentFails === 0) { peg$fail(peg$c10); }
+          if (peg$silentFails === 0) {
+            peg$fail(peg$c10);
+          }
         }
         if (s0 === peg$FAILED) {
           if (input.charCodeAt(peg$currPos) === 61) {
@@ -456,7 +534,9 @@ export default /*
             peg$currPos++;
           } else {
             s0 = peg$FAILED;
-            if (peg$silentFails === 0) { peg$fail(peg$c12); }
+            if (peg$silentFails === 0) {
+              peg$fail(peg$c12);
+            }
           }
         }
       }
@@ -473,7 +553,9 @@ export default /*
         peg$currPos += 8;
       } else {
         s1 = peg$FAILED;
-        if (peg$silentFails === 0) { peg$fail(peg$c14); }
+        if (peg$silentFails === 0) {
+          peg$fail(peg$c14);
+        }
       }
       if (s1 === peg$FAILED) {
         if (input.substr(peg$currPos, 8) === peg$c15) {
@@ -481,7 +563,9 @@ export default /*
           peg$currPos += 8;
         } else {
           s1 = peg$FAILED;
-          if (peg$silentFails === 0) { peg$fail(peg$c16); }
+          if (peg$silentFails === 0) {
+            peg$fail(peg$c16);
+          }
         }
       }
       if (s1 !== peg$FAILED) {
@@ -502,7 +586,9 @@ export default /*
         peg$currPos++;
       } else {
         s1 = peg$FAILED;
-        if (peg$silentFails === 0) { peg$fail(peg$c19); }
+        if (peg$silentFails === 0) {
+          peg$fail(peg$c19);
+        }
       }
       while (s1 !== peg$FAILED) {
         s0.push(s1);
@@ -511,7 +597,9 @@ export default /*
           peg$currPos++;
         } else {
           s1 = peg$FAILED;
-          if (peg$silentFails === 0) { peg$fail(peg$c19); }
+          if (peg$silentFails === 0) {
+            peg$fail(peg$c19);
+          }
         }
       }
 
@@ -527,7 +615,9 @@ export default /*
         peg$currPos++;
       } else {
         s1 = peg$FAILED;
-        if (peg$silentFails === 0) { peg$fail(peg$c19); }
+        if (peg$silentFails === 0) {
+          peg$fail(peg$c19);
+        }
       }
       if (s1 !== peg$FAILED) {
         while (s1 !== peg$FAILED) {
@@ -537,7 +627,9 @@ export default /*
             peg$currPos++;
           } else {
             s1 = peg$FAILED;
-            if (peg$silentFails === 0) { peg$fail(peg$c19); }
+            if (peg$silentFails === 0) {
+              peg$fail(peg$c19);
+            }
           }
         }
       } else {
@@ -628,7 +720,9 @@ export default /*
           peg$currPos += 3;
         } else {
           s2 = peg$FAILED;
-          if (peg$silentFails === 0) { peg$fail(peg$c21); }
+          if (peg$silentFails === 0) {
+            peg$fail(peg$c21);
+          }
         }
         if (s2 !== peg$FAILED) {
           s3 = peg$parse__();
@@ -642,7 +736,9 @@ export default /*
                   peg$currPos++;
                 } else {
                   s6 = peg$FAILED;
-                  if (peg$silentFails === 0) { peg$fail(peg$c23); }
+                  if (peg$silentFails === 0) {
+                    peg$fail(peg$c23);
+                  }
                 }
                 if (s6 !== peg$FAILED) {
                   s7 = peg$parse_();
@@ -693,7 +789,9 @@ export default /*
           peg$currPos += 4;
         } else {
           s2 = peg$FAILED;
-          if (peg$silentFails === 0) { peg$fail(peg$c26); }
+          if (peg$silentFails === 0) {
+            peg$fail(peg$c26);
+          }
         }
         if (s2 !== peg$FAILED) {
           s3 = peg$parse__();
@@ -707,7 +805,9 @@ export default /*
                   peg$currPos++;
                 } else {
                   s6 = peg$FAILED;
-                  if (peg$silentFails === 0) { peg$fail(peg$c28); }
+                  if (peg$silentFails === 0) {
+                    peg$fail(peg$c28);
+                  }
                 }
                 if (s6 !== peg$FAILED) {
                   s7 = peg$parse_();
@@ -729,7 +829,9 @@ export default /*
                                   peg$currPos++;
                                 } else {
                                   s14 = peg$FAILED;
-                                  if (peg$silentFails === 0) { peg$fail(peg$c23); }
+                                  if (peg$silentFails === 0) {
+                                    peg$fail(peg$c23);
+                                  }
                                 }
                                 if (s14 !== peg$FAILED) {
                                   s15 = peg$parse_();
@@ -820,7 +922,9 @@ export default /*
                   peg$currPos++;
                 } else {
                   s6 = peg$FAILED;
-                  if (peg$silentFails === 0) { peg$fail(peg$c28); }
+                  if (peg$silentFails === 0) {
+                    peg$fail(peg$c28);
+                  }
                 }
                 if (s6 !== peg$FAILED) {
                   s7 = peg$parse_();
@@ -834,7 +938,9 @@ export default /*
                           peg$currPos++;
                         } else {
                           s10 = peg$FAILED;
-                          if (peg$silentFails === 0) { peg$fail(peg$c23); }
+                          if (peg$silentFails === 0) {
+                            peg$fail(peg$c23);
+                          }
                         }
                         if (s10 !== peg$FAILED) {
                           peg$savedPos = s0;
@@ -974,7 +1080,9 @@ export default /*
           peg$currPos++;
         } else {
           s2 = peg$FAILED;
-          if (peg$silentFails === 0) { peg$fail(peg$c32); }
+          if (peg$silentFails === 0) {
+            peg$fail(peg$c32);
+          }
         }
         if (s2 !== peg$FAILED) {
           s3 = peg$parse_();
@@ -988,7 +1096,9 @@ export default /*
                   peg$currPos++;
                 } else {
                   s6 = peg$FAILED;
-                  if (peg$silentFails === 0) { peg$fail(peg$c34); }
+                  if (peg$silentFails === 0) {
+                    peg$fail(peg$c34);
+                  }
                 }
                 if (s6 !== peg$FAILED) {
                   s7 = peg$parse_();
@@ -1049,7 +1159,9 @@ export default /*
                 peg$currPos++;
               } else {
                 s4 = peg$FAILED;
-                if (peg$silentFails === 0) { peg$fail(peg$c34); }
+                if (peg$silentFails === 0) {
+                  peg$fail(peg$c34);
+                }
               }
               if (s4 !== peg$FAILED) {
                 s5 = peg$parse_();
@@ -1099,7 +1211,9 @@ export default /*
               peg$currPos++;
             } else {
               s3 = peg$FAILED;
-              if (peg$silentFails === 0) { peg$fail(peg$c32); }
+              if (peg$silentFails === 0) {
+                peg$fail(peg$c32);
+              }
             }
             while (s3 !== peg$FAILED) {
               s2.push(s3);
@@ -1108,7 +1222,9 @@ export default /*
                 peg$currPos++;
               } else {
                 s3 = peg$FAILED;
-                if (peg$silentFails === 0) { peg$fail(peg$c32); }
+                if (peg$silentFails === 0) {
+                  peg$fail(peg$c32);
+                }
               }
             }
             if (s2 !== peg$FAILED) {
@@ -1171,125 +1287,130 @@ export default /*
       return s0;
     }
 
+    var variables = [];
+    var structuralVariables = [];
+    var artificalVariables = [];
+    var logicalVariables = [];
+    var baseVariables = [];
+    var constraints = [];
+    var originalConstraints = [];
+    var objective;
+    var target;
+    var tempMap = {};
+    var tempConstraint;
+    var logicalVariableCounter = 1;
+    var artificalVariableCounter = 1;
 
-         var variables=[];
-         var structuralVariables=[];
-         var artificalVariables=[];
-         var logicalVariables=[];
-         var baseVariables = [];
-         var constraints=[];
-         var originalConstraints=[];
-         var objective;
-         var target;
-         var tempMap={};
-         var tempConstraint;
-         var logicalVariableCounter = 1;
-         var artificalVariableCounter = 1;
+    function addVariableName(variableName) {
+      variables.push(variableName);
+      structuralVariables.push(variableName);
+      if (variableName.includes("x")) {
+        artificalVariableCounter++;
+      }
+    }
 
-         function addVariableName(variableName) {
-         	variables.push(variableName);
-            structuralVariables.push(variableName);
-            if (variableName.includes("x")) {
-            	artificalVariableCounter++;
-            }
-         }
+    function addVariable(coefficient, variableName) {
+      validateVariable(variableName);
+      tempMap[variableName] =
+        tempMap[variableName] == undefined
+          ? coefficient
+          : (tempMap[variableName] += coefficient);
+    }
 
-         function addVariable(coefficient, variableName) {
-         	validateVariable(variableName);
-            tempMap[variableName] = tempMap[variableName] == undefined ? coefficient : tempMap[variableName]+=coefficient;
-         }
+    function validateVariable(variableName) {
+      if (!variables.includes(variableName)) {
+        throw new SyntaxError(
+          variableName +
+            " variable doesn't exist. You can use only: " +
+            variables
+        );
+      }
+    }
 
-         function validateVariable(variableName) {
-         	if (!variables.includes(variableName)) {
-            	throw new SyntaxError(variableName + " variable doesn't exist. You can use only: " + variables);
-            }
-         }
+    function addConstraint(relation) {
+      var original = JSON.parse(JSON.stringify(tempMap));
+      original[transformRelation(relation)] = tempConstraint;
+      originalConstraints.push(original);
+      constraints.push(transformConstraint(tempMap, relation, tempConstraint));
+      tempMap = {};
+    }
 
-         function addConstraint(relation) {
-         	var original = JSON.parse(JSON.stringify(tempMap));
-            original[transformRelation(relation)] = tempConstraint;
-         	originalConstraints.push(original);
-         	constraints.push(transformConstraint(tempMap, relation, tempConstraint));
-            tempMap={};
-         }
+    function transformRelation(relation) {
+      var transformedRealtion;
+      if (relation === "<=") {
+        transformedRealtion = "max";
+      } else if (relation === ">=") {
+        transformedRealtion = "min";
+      } else {
+        transformedRealtion = "equalTo";
+      }
+      return transformedRealtion;
+    }
 
-         function transformRelation(relation) {
-         	var transformedRealtion;
-         	if (relation === "<=") {
-            	transformedRealtion = "max";
-            } else if (relation === ">=") {
-            	transformedRealtion = "min";
-            } else {
-            	transformedRealtion = "equalTo";
-            }
-            return transformedRealtion;
-         }
+    function transformConstraint(constraint, relation, tempConstraint) {
+      if (relation === "<=") {
+        var logicalVariableName = "y" + logicalVariableCounter++;
+        constraint[logicalVariableName] = 1;
+        logicalVariables.push(logicalVariableName);
+        baseVariables.push(logicalVariableName);
+        variables.push(logicalVariableName);
+      } else if (relation === ">=") {
+        var logicalVariableName = "y" + logicalVariableCounter++;
+        var artificalVariableName = "x" + artificalVariableCounter++;
+        constraint[logicalVariableName] = -1;
+        constraint[artificalVariableName] = 1;
+        variables.push(logicalVariableName);
+        variables.push(artificalVariableName);
+        logicalVariables.push(logicalVariableName);
+        artificalVariables.push(artificalVariableName);
+        baseVariables.push(artificalVariableName);
+      } else {
+        var artificalVariableName = "x" + artificalVariableCounter++;
+        constraint[artificalVariableName] = 1;
+        artificalVariables.push(artificalVariableName);
+        baseVariables.push(artificalVariableName);
+        variables.push(artificalVariableName);
+      }
 
-         function transformConstraint(constraint, relation, tempConstraint) {
-         	if (relation === "<=") {
-            	var logicalVariableName = "y" + logicalVariableCounter++;
-            	constraint[logicalVariableName] = 1;
-                logicalVariables.push(logicalVariableName);
-                baseVariables.push(logicalVariableName);
-                variables.push(logicalVariableName);
-            } else if (relation === ">=") {
-            	var logicalVariableName = "y" + logicalVariableCounter++;
-            	var artificalVariableName = "x" + artificalVariableCounter++;
-                constraint[logicalVariableName] = -1;
-                constraint[artificalVariableName] = 1;
-                variables.push(logicalVariableName);
-                variables.push(artificalVariableName);
-                logicalVariables.push(logicalVariableName);
-                artificalVariables.push(artificalVariableName);
-                baseVariables.push(artificalVariableName);
-            } else {
-            	var artificalVariableName = "x" + artificalVariableCounter++;
-            	constraint[artificalVariableName] = 1;
-                artificalVariables.push(artificalVariableName);
-                baseVariables.push(artificalVariableName);
-                variables.push(artificalVariableName);
-            }
+      constraint["equalTo"] = tempConstraint;
+      return constraint;
+    }
 
-            constraint["equalTo"] = tempConstraint;
-            return constraint;
-         }
+    function addVariablesWithZeroValue() {
+      for (var i = 0; i < variables.length; i++) {
+        addVariableIfUndefined(variables[i], constraints);
+      }
+      for (var i = 0; i < structuralVariables.length; i++) {
+        addVariableIfUndefined(variables[i], originalConstraints);
+      }
+    }
 
-         function addVariablesWithZeroValue() {
-            for (var i = 0; i < variables.length; i++) {
-            	addVariableIfUndefined(variables[i], constraints);
-            }
-            for (var i = 0; i < structuralVariables.length; i++) {
-            	addVariableIfUndefined(variables[i], originalConstraints);
-            }
-         }
+    function addVariableIfUndefined(varName, constraints) {
+      for (var i = 0; i < constraints.length; i++) {
+        if (constraints[i][varName] == undefined) {
+          constraints[i][varName] = 0;
+        }
+      }
+    }
 
-         function addVariableIfUndefined(varName, constraints) {
-         	for (var i = 0; i < constraints.length; i++) {
-                	if (constraints[i][varName] == undefined) {
-                    	constraints[i][varName] = 0;
-                    }
-            }
-         }
-
-         function getResult() {
-        	addVariablesWithZeroValue();
-         	var result = {};
-            result.originalForm = {
-            	constraints: originalConstraints
-            };
-            result.standardForm = {
-            	constraints: constraints
-            };
-            result.objective = objective;
-            result.target = target;
-            result.variables = variables;
-            result.structuralVariables = structuralVariables;
-            result.artificalVariables = artificalVariables;
-            result.logicalVariables = logicalVariables;
-            result.baseVariables = baseVariables;
-         	return result;
-         }
-
+    function getResult() {
+      addVariablesWithZeroValue();
+      var result = {};
+      result.originalForm = {
+        constraints: originalConstraints
+      };
+      result.standardForm = {
+        constraints: constraints
+      };
+      result.objective = objective;
+      result.target = target;
+      result.variables = variables;
+      result.structuralVariables = structuralVariables;
+      result.artificalVariables = artificalVariables;
+      result.logicalVariables = logicalVariables;
+      result.baseVariables = baseVariables;
+      return result;
+    }
 
     peg$result = peg$startRuleFunction();
 
@@ -1312,6 +1433,6 @@ export default /*
 
   return {
     SyntaxError: peg$SyntaxError,
-    parse:       peg$parse
+    parse: peg$parse
   };
 })();

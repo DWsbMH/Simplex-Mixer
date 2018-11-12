@@ -1,21 +1,21 @@
-import glpk from 'glpk.js'
-import _ from 'lodash'
+import glpk from "glpk.js";
+import _ from "lodash";
 
-function getInitialBase (problem) {
-   return glpk.solve(createModelFromProblem(problem));
+function getInitialBase(problem) {
+  return glpk.solve(createModelFromProblem(problem));
 }
 
 function createModelFromProblem(problem) {
   var subjectTos = createSubjectTos(problem.constraints);
   return {
-    name: 'LP',
+    name: "LP",
     objective: {
       direction: glpk.GLP_MIN,
-      name: 'objective',
+      name: "objective",
       vars: []
     },
     subjectTo: subjectTos
-  }
+  };
 }
 
 function createSubjectTos(constraints) {
@@ -23,7 +23,7 @@ function createSubjectTos(constraints) {
   var subjectToResult = [];
   _.forEach(constraints, function(constraint) {
     subjectToResult.push({
-      name: 'constraint' + constraintCounter++,
+      name: "constraint" + constraintCounter++,
       vars: createVars(constraint),
       bnds: createBounds(constraint)
     });
@@ -45,7 +45,7 @@ function createVars(constraint) {
 }
 
 function isBound(key) {
-  return key ==='max' || key === 'min' || key === 'equalTo';
+  return key === "max" || key === "min" || key === "equalTo";
 }
 
 function createBounds(constraint) {
@@ -54,9 +54,9 @@ function createBounds(constraint) {
     if (isBound(key)) {
       bounds = {
         type: createType(key),
-        ub: createBound(key, value, 'max'),
-        lb: createBound(key, value, 'min')
-      }
+        ub: createBound(key, value, "max"),
+        lb: createBound(key, value, "min")
+      };
     }
   });
   return bounds;
@@ -64,9 +64,9 @@ function createBounds(constraint) {
 
 function createType(key) {
   var type;
-  if (key === 'max') {
+  if (key === "max") {
     type = glpk.GLP_UP;
-  } else if (key === 'min') {
+  } else if (key === "min") {
     type = glpk.GLP_LO;
   } else {
     type = 5;
@@ -76,7 +76,7 @@ function createType(key) {
 
 function createBound(key, value, type) {
   var bound;
-  if (key === type || key === 'equalTo') {
+  if (key === type || key === "equalTo") {
     bound = value;
   } else {
     bound = 0;
@@ -84,4 +84,4 @@ function createBound(key, value, type) {
   return bound;
 }
 
-export {getInitialBase}
+export { getInitialBase };
