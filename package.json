@@ -9,12 +9,9 @@
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
-    "vue": "^2.5.17",
-    "vue-router": "^3.0.1",
-    "vuex": "^3.0.1",
     "@fortawesome/fontawesome-free": "^5.5.0",
-    "@fortawesome/fontawesome-free-brands": "^5.0.13",
     "@fortawesome/fontawesome-svg-core": "^1.2.8",
+    "@fortawesome/free-brands-svg-icons": "^5.5.0",
     "@fortawesome/free-regular-svg-icons": "^5.5.0",
     "@fortawesome/free-solid-svg-icons": "^5.5.0",
     "@fortawesome/vue-fontawesome": "^0.1.2",
@@ -27,9 +24,12 @@
     "jquery": "^3.3.1",
     "lodash": "^4.17.11",
     "mathjs": "^5.2.3",
+    "vue": "^2.5.17",
     "vue-c3": "^1.2.9",
     "vue-codemirror-lite": "^1.0.4",
-    "vue-slider-component": "^2.8.0"
+    "vue-router": "^3.0.1",
+    "vue-slider-component": "^2.8.0",
+    "vuex": "^3.0.1"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.1.1",

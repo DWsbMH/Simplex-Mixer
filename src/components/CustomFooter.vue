@@ -10,7 +10,7 @@
       </div>
       <div class="col-md-4">
         <font-awesome-icon :icon="['fab', 'github']" size="lg"></font-awesome-icon>
-        <a href="https://github.com/DWsbMH/Simplex-Mixer">GitHub</a>
+        <a href="https://github.com/DWsbMH/Simplex-Mixer"> GitHub</a>
       </div>
     </div>
   </div>
