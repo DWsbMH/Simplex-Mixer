@@ -1,7 +1,11 @@
 language: node_js
 node_js:
   - "stable"
-cache: npm
+install:
+  - npm ci
+cache:
+  directories:
+    - "node_modules"
 deploy:
   provider: script
   script: bash deploy.sh
