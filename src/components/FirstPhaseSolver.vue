@@ -73,30 +73,39 @@ export default {
       });
     },
     getFeasibleSolution: function(problem) {
-      var $this = this;
-      var variables;
-      if (_.isEqual(problem.logicalVariables, problem.baseVariables)) {
-        variables = $this.createInitialBase(problem, problem.logicalVariables);
+      var variables = this.createInitialBase(problem);
+      if (this.areOnlyLogicalVariablesInBase(problem)) {
         this.$emit("feasibleSolutionFound", { variables: variables });
       } else {
         this.showMessages = true;
-        variables = $this.createInitialBase(problem, problem.baseVariables);
-        $this.modifiedProblem = _.cloneDeep(problem);
-        $this.modifiedProblem.objective = {};
-        $this.modifiedProblem.target = "minimize";
-        _.forEach(problem.artificalVariables, function(artificalVariable) {
-          $this.modifiedProblem.objective[artificalVariable] = 1;
-        });
-        this.$refs.simplexSolver.initProblem($this.modifiedProblem, {
+        this.modifiedProblem = _.cloneDeep(problem);
+        this.modifiedProblem.target = "minimize";
+        this.populateNewObjective(problem.artificalVariables);
+        this.$refs.simplexSolver.initProblem(this.modifiedProblem, {
           variables: variables
         });
       }
     },
-    createInitialBase: function(problem, variableNames) {
+    areOnlyLogicalVariablesInBase: function(problem) {
+      return _.isEqual(problem.logicalVariables, problem.baseVariables);
+    },
+    populateNewObjective: function(artificalVariables) {
+      var $this = this;
+      $this.modifiedProblem.objective = {};
+      _.forEach(artificalVariables, function(artificalVariable) {
+        $this.modifiedProblem.objective[artificalVariable] = 1;
+      });
+    },
+    createInitialBase: function(problem) {
       var variables = [];
-      _.forEach(variableNames, function(variable) {
+      this.populateBaseVariables(problem, variables);
+      this.populateNonBaseVariables(problem, variables);
+      return variables;
+    },
+    populateBaseVariables: function(problem, variables) {
+      _.forEach(problem.baseVariables, function(variable) {
         var columnVector = [];
-        var value;
+        var value = 0;
         _.forEach(problem.standardForm.constraints, function(constraint) {
           columnVector.push(constraint[variable]);
           if (constraint[variable] != 0) {
@@ -111,8 +120,10 @@ export default {
           max: value + 2
         });
       });
+    },
+    populateNonBaseVariables: function(problem, variables) {
       _.forEach(problem.variables, function(variable) {
-        if (!_.includes(variableNames, variable)) {
+        if (!_.includes(problem.baseVariables, variable)) {
           var columnVector = [];
           _.forEach(problem.standardForm.constraints, function(constraint) {
             columnVector.push(constraint[variable]);
@@ -126,7 +137,6 @@ export default {
           });
         }
       });
-      return variables;
     },
     removeArtificalVariables: function(solution) {
       return _.remove(solution, function(variable, problem) {
