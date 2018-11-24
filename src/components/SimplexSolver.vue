@@ -68,7 +68,6 @@ export default {
     variables: {
       handler: function(newVal) {
         var changedVariable = this.getChangedVariable(
-          newVal,
           this.variables,
           this.variablesCopy
         );
@@ -101,23 +100,23 @@ export default {
   },
   methods: {
     initProblem: function(problem, feasibleSolution) {
-      var $this = this;
-
-      $this.problem = problem;
-      $this.variables = feasibleSolution.variables;
-
-      _.forEach($this.variables, function(variable) {
-        var multiplier =
-          problem.objective[variable.name] != undefined
-            ? problem.objective[variable.name]
-            : 0;
-        $this.result.actualResult += multiplier * variable.value;
-      });
-      $this.$refs.chartHandler.init($this.result.actualResult, $this.variables);
+      this.problem = problem;
+      this.variables = feasibleSolution.variables;
+      this.calculateInitialObjectiveFunctionValue(problem.objective, this.variables)
+      this.$refs.chartHandler.init(this.result.actualResult, this.variables);
       this.populateReducedCosts(problem);
-      $this.addTable(undefined);
-      $this.isOptimalSolution();
-      $this.variablesCopy = _.cloneDeep($this.variables);
+      this.addTable(undefined);
+      this.isOptimalSolution();
+      this.variablesCopy = _.cloneDeep(this.variables);
+    },
+    calculateInitialObjectiveFunctionValue: function(objective, variables) {
+      var $this = this;
+      _.mapKeys(objective, function(coefficient, variableName) {
+        var variableValue = _.find(variables, function(variable) {
+          return variable.name == variableName;
+        }).value;
+        $this.result.actualResult += coefficient * variableValue;
+      });
     },
     addTable: function(iterationCounter) {
       var ComponentClass = Vue.extend(SimplexTable);
@@ -156,7 +155,7 @@ export default {
         variable.reducedCost = reducedCost;
       });
     },
-    getChangedVariable: function(newVal, variables, variablesCopy) {
+    getChangedVariable: function(variables, variablesCopy) {
       var result;
       for (var i = 0; i < variables.length; i++) {
         if (variables[i].value != variablesCopy[i].value) {
@@ -209,7 +208,6 @@ export default {
       for (var i = 0; i < this.variables.length; i++) {
         variable = this.variables[i];
         if (variable.isInBase) {
-          // console.log(variable.name,variable.value, "-", changedVariable.difference, "*", changedVariable.columnVector[i]);
           var newValue =
             variable.value -
             changedVariable.difference * changedVariable.columnVector[i];
@@ -236,7 +234,8 @@ export default {
       this.variables[changedVariable.position] = tmp;
       this.variables[changedVariable.position].isInBase = false;
       this.removeExittingVariableIfNeccessary(
-        this.variables[changedVariable.position]
+        this.variables[changedVariable.position],
+        changedVariable.position
       );
     },
     generateNewBase: function(changedVariable) {
@@ -276,18 +275,12 @@ export default {
           this.changingVariable != variable.name)
       );
     },
-    removeExittingVariableIfNeccessary: function(variable) {
-      var index;
-      for (var i = 0; i < this.variables.length; i++) {
-        if (this.variables[i].name === variable.name) {
-          index = i;
-        }
-      }
+    removeExittingVariableIfNeccessary: function(variable, position) {
       if (
         _.includes(this.problem.artificalVariables, variable.name) ||
         _.includes(this.problem.logicalVariables, variable.name)
       ) {
-        this.variables.splice(index, 1);
+        this.variables.splice(position, 1);
       }
     },
     isOptimalSolution: function() {
@@ -298,7 +291,6 @@ export default {
           : variable.reducedCost <= 0;
       });
       if (isOptimal) {
-        console.log("optimalFound");
         var optimalSolution = {
           variables: _.cloneDeep(this.variables),
           result: this.result.actualResult,

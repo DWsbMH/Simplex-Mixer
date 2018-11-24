@@ -142,7 +142,4 @@ export default {
   background-color: #f6f6f6;
   padding: 15px;
 }
-.excerciseTable {
-  margin: auto;
-}
 </style>

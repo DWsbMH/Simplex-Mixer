@@ -18,7 +18,7 @@
         <div class="col col-md-10">
           <button class="createProblemButton customButton float-left" @click="createProblem">Create problem</button>
           <div class="customButton float-right">
-            <input type="file" name="uploadProblem" id="uploadProblem" @change="uploadFile" hidden/>
+            <input type="file" id="uploadProblem" @change="uploadFile" hidden/>
             <label for="uploadProblem" class="createProblemButton">Upload problem</label>
           </div>
         </div>
@@ -31,7 +31,7 @@
 </template>
 <script>
 import parser from "../assets/js/parser2.js";
-import example from "../assets/examples/example0.txt";
+import example from "../assets/examples/example.glpk";
 import { codemirror } from "vue-codemirror-lite";
 import grammarSyntax from "./GrammarSyntax.vue";
 import about from "./About.vue";
@@ -58,12 +58,12 @@ export default {
   },
   methods: {
     uploadFile: function(event) {
-      var vm = this;
+      var $this = this;
       var file = event.target.files[0];
       if (file) {
         var fileReader = new FileReader();
         fileReader.onload = function(e) {
-          vm.problem = e.target.result;
+          $this.problem = e.target.result;
         };
         fileReader.readAsText(file);
       }
