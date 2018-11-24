@@ -66,7 +66,7 @@ export default {
   },
   watch: {
     variables: {
-      handler: function(newVal) {
+      handler: function() {
         var changedVariable = this.getChangedVariable(
           this.variables,
           this.variablesCopy
@@ -102,7 +102,10 @@ export default {
     initProblem: function(problem, feasibleSolution) {
       this.problem = problem;
       this.variables = feasibleSolution.variables;
-      this.calculateInitialObjectiveFunctionValue(problem.objective, this.variables)
+      this.calculateInitialObjectiveFunctionValue(
+        problem.objective,
+        this.variables
+      );
       this.$refs.chartHandler.init(this.result.actualResult, this.variables);
       this.populateReducedCosts(problem);
       this.addTable(undefined);
