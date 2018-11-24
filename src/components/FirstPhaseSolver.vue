@@ -58,12 +58,15 @@ export default {
   },
   methods: {
     handleSolution: function(optimalSolution) {
-      if (parseFloat(optimalSolution.result).toFixed(5) > 0) {
-        this.$root.$emit("bv::show::modal", "noFeasibleSolutionModal");
-      } else {
+      if (this.isObjectiveFunctionValueZero(optimalSolution.result)) {
         this.optimalSolution = optimalSolution;
-        this.$root.$emit("bv::show::modal", "feasibleSolutionFoundModal");
+        this.$refs.feasibleSolutionFoundModal.show();
+      } else {
+        this.$refs.noFeasibleSolutionModal.show();
       }
+    },
+    isObjectiveFunctionValueZero: function(result) {
+      return parseFloat(result).toFixed(5) == 0;
     },
     fireFeasibleSolutionFoundEvent: function() {
       this.$refs.feasibleSolutionFoundModal.hide();

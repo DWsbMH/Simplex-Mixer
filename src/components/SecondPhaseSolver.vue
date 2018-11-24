@@ -16,7 +16,7 @@
   </div>
   <simplexSolver ref="simplexSolver" @optimalSolutionFound="handleSolution"></simplexSolver>
   <div>
-    <b-modal id="optimalSolutionFoundModal" title="Congratulations!">
+    <b-modal id="optimalSolutionFoundModal" ref="optimalSolutionFoundModal" title="Congratulations!">
       <b-container fluid>
         <b-row class="text-center">
           <p class="my-4">You have found an optimal solution.</p>
@@ -63,7 +63,7 @@ export default {
   methods: {
     handleSolution: function(optimalSolution) {
       this.optimalSolution = optimalSolution;
-      this.$root.$emit("bv::show::modal", "optimalSolutionFoundModal");
+      this.$refs.optimalSolutionFoundModal.show();
     },
     initSecondPhase: function(problem, feasibleSolution) {
       this.problem = problem;
